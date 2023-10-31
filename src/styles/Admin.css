@@ -1,0 +1,532 @@
+.nav-back {
+  height: 100vh;
+  font-size: smaller;
+  font-family: sans-serif;
+}
+.nav-link {
+  color: black;
+  font-weight: bold;
+  padding: 5px;
+  margin-top: 6px;
+}
+
+.bor {
+  background-color: #e3974b;
+  height: 90px;
+  margin: 15px;
+  border: 1px solid black;
+  margin-top: 20px;
+  border-radius: 8px;
+  transition: transform 0.3s, box-shadow 0.3s; /* Add transition for zoom and shadow */
+
+  /* Add a box shadow */
+  box-shadow: 0 5px 3px #f0cead;
+
+  /* Add hover effect */
+  &:hover {
+    transform: scale(1.05); /* Zoom in by 5% (10px for 200px boxes) */
+    box-shadow: 0 10px 5px rgba(31, 11, 11, 0.2); /* Add a stronger shadow on hover */
+  }
+}
+.Text {
+  text-align: center;
+  margin-top: 20%;
+  color: aliceblue;
+  font-family: sans-serif;
+  font-weight: 200;
+}
+.logo {
+  height: 100px; /* Set the desired height */
+  width: 150px;
+  position: relative;
+  background-image: url("./images/company-logo.jpg"); /* Specify the path to your image */
+  background-size: cover; /* Resize the image to cover the container */
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+.user-logo {
+  background-image: url("./images/admin.png");
+}
+
+.label {
+  margin-top: 5px;
+  margin-bottom: 10px;
+  margin-left: 25px;
+  font-family: sans-serif;
+  font-weight: bolder;
+  font-size: medium;
+}
+
+.sidebar a {
+  padding: 5px;
+  text-align: center;
+  text-decoration: none;
+  color: black;
+}
+
+.sidebar a:hover {
+  background-color: #e3974b;
+}
+
+#margin-user-icon {
+  margin-left: 10%;
+}
+.margin-top {
+  margin-top: 10px;
+}
+
+#responsive-button {
+  display: inline-block;
+  font-size: 14px;
+  text-align: center;
+  text-decoration: none;
+  border: 2px solid transparent; /* Transparent border initially */
+  background-color: #e3974b;
+  color: black;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: border-color 0.3s; /* Add a smooth transition for border color change */
+}
+
+/* Add a yellow border on hover */
+#responsive-button:hover {
+  border-color: #ea7c0f;
+  transform: scale(1.05); /* Zoom in by 5% (10px for 200px boxes) */
+  box-shadow: 0 10px 5px rgba(31, 11, 11, 0.2); /* Add a stronger shadow on hover */
+}
+
+/* Add responsive styles for smaller screens */
+@media screen and (max-width: 600px) {
+  #responsive-button {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+#responsive-search {
+  display: inline-block;
+  font-size: 14px;
+  text-align: center;
+  text-decoration: none;
+  border: 1px solid black; /* Transparent border initially */
+
+  color: black;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: border-color 0.1s; /* Add a smooth transition for border color change */
+}
+
+/* Add a yellow border on hover */
+#responsive-search:hover {
+  border-color: #ea7c0f;
+  transform: scale(1); /* Zoom in by 5% (10px for 200px boxes) */
+  box-shadow: 0 10px 5px rgba(31, 11, 11, 0.2); /* Add a stronger shadow on hover */
+}
+
+/* Add responsive styles for smaller screens */
+@media screen and (max-width: 600px) {
+  #responsive-search {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+.margin-topGraph {
+  margin-top: -100px;
+}
+
+.table-css {
+  opacity: 0.8;
+}
+.add-btn {
+  margin-left: 89%;
+  width: 100px;
+}
+.add-cat-head {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+.custom-table {
+  margin-top: 20px;
+}
+
+.button-add-cat {
+  background-color: #ea7c0f;
+  width: 100px;
+  height: 35px;
+  border: none;
+  border-radius: 13px;
+  margin-top: 5%;
+  margin-left: 3%;
+  padding: 2px;
+  margin-left: 30px;
+  transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s; /* Add transition for color, shadow, and transform */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.button-add-cat:hover {
+  background-color: rgb(16, 204, 73);
+  color: rgb(20, 16, 16);
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
+  transform: scale(1.05); /* Zoom in on hover by increasing scale */
+}
+
+.button-cancel-cat {
+  background-color: #f95b33;
+  width: 100px;
+  height: 35px;
+  border: none;
+  border-radius: 13px;
+  margin-top: 5%;
+  margin-left: 3%;
+  padding: 2px;
+  margin-left: 30px;
+  transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s; /* Add transition for color, shadow, and transform */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.button-cancel-cat:hover {
+  background-color: rgb(241, 21, 21);
+  color: rgb(20, 16, 16);
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
+  transform: scale(1.05); /* Zoom in on hover by increasing scale */
+}
+
+.message {
+  margin-top: 1%;
+  margin-left: 3%;
+}
+
+/* Add these styles to your CSS */
+.image-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  position: relative;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  transition: transform 0.2s ease-in-out;
+}
+
+.preview-image:hover {
+  transform: scale(2);
+}
+/* 
+  ==================================== */
+/* .toggle-label::after{
+    content: "";
+    width: 18px;
+    height: 18px;
+    background-color: #f6f1ec;
+    border-radius: 50%;
+    position: absolute;
+    top: 1px;
+    left:1px;
+    transition: 0.2s;
+  }
+  
+  .toggle-input{
+    display: none;
+  }
+  .toggle-label{
+    display: inline-block;
+    width: 50px;
+    height: 20px;
+    top: 33px;
+    left: 90%;
+    background-color: #ccc;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+  
+  }
+  
+  .toggle-input:checked+ .toggle-label{
+    background-color: #4caf50;
+  }
+  .toggle-input:checked + .toggle-label::after{
+    left: calc(100% - 20px);
+  } */
+.toggle-label::after {
+  content: "";
+  width: 18px;
+  height: 18px;
+  background-color: #f6f1ec;
+  border-radius: 50%;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  transition: 0.2s;
+}
+
+.toggle-input {
+  display: none;
+}
+
+.toggle-label {
+  display: inline-block;
+  width: 50px;
+  height: 20px;
+  top: 33px;
+  left: 90%;
+  background-color: #4caf50;
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+}
+
+/* Set the default state to checked */
+.toggle-input:checked + .toggle-label {
+  background-color: #ccc;
+}
+
+.toggle-input:checked + .toggle-label::after {
+  left: calc(100% - 20px);
+}
+
+.date {
+  border: none;
+  margin-left: 35%;
+  background: transparent;
+}
+.container {
+  padding-top: 130px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.login-container {
+  max-width: 450px;
+  height: 100%;
+  margin: 0 auto;
+  padding: 20px;
+
+  box-shadow: 0 0 10px #f3ba81;
+  border-radius: 5px;
+  border: none;
+  opacity: 0.9;
+}
+#heading {
+  color: black;
+  opacity: inherit;
+}
+.button {
+  margin: 20px;
+  width: 160px;
+  height: 40px;
+  border-radius: 10px;
+  background: #e3974b;
+  border: none;
+  font-weight: bold;
+  box-shadow: #fff;
+}
+
+/* Default styles for the background image */
+
+#emailError {
+  color: red;
+  font-size: small;
+  margin-left: 5px;
+  font-family: sans-serif;
+}
+#passwordError {
+  color: red;
+  font-size: small;
+  margin-left: 5px;
+  font-family: sans-serif;
+}
+
+/* Default styles for larger screens */
+.img2 {
+  background-image: url("images/admin-login-image.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  text-align: left;
+  width: 100%;
+  height: 100vh;
+  font-family: sans-serif;
+
+  position: relative;
+
+  &::before {
+    content: "";
+    background-color: rgba(255, 255, 255, 0.8);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    -webkit-backdrop-filter: blur(0.1px);
+    backdrop-filter: blur(0.1px);
+  }
+}
+
+/* Media query for screens with a maximum width of 768px and minimum height of 500px */
+@media screen and (max-width: 768px) and (min-height: 500px) {
+  .img2 {
+    background-attachment: scroll;
+    height: auto; /* Auto height based on content */
+    padding: 20px; /* Add padding for better spacing */
+    text-align: left; /* Center-align content */
+    &::before {
+      content: "";
+      background-color: rgba(255, 255, 255, 0.8);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      backdrop-filter: none; /* No backdrop filter for screens with width <= 768px and height >= 500px */
+      -webkit-backdrop-filter: none; /* No backdrop filter for screens with width <= 768px and height >= 500px */
+    }
+
+    /* Custom styles for screens with width <= 768px and height >= 500px */
+    font-size: 18px;
+    padding: 10px;
+  }
+}
+
+.handle-edit {
+  margin-left: 10px;
+  border: none;
+}
+
+.view-modal-img {
+  max-width: 200px;
+  max-height: 160px;
+}
+
+.page-heading {
+  color: black;
+  font-family: sans-serif;
+  font-weight: bolder;
+  margin-left: 3%;
+}
+
+.category-data-table {
+}
+
+.form-flex {
+  font-family: sans-serif;
+  font-size: 16px;
+}
+
+.error-message {
+  color: red;
+  font-size: 11px;
+}
+
+#category-form-input-field {
+  background-color: transparent;
+  border: 1px solid #000;
+}
+
+#category-form-input-field-txtarea {
+  height: 200px;
+  background-color: transparent;
+  border: 1px solid #000;
+}
+.category-button-div {
+  margin-top: -35px;
+  margin-left: -1px;
+}
+
+#product-preview-btn {
+  width: 200px;
+  color: black;
+  background-color: transparent;
+  border: none;
+  font-size: 13px;
+}
+
+#image-preview-product {
+  margin-right: 15px;
+  transition: 0.2s;
+  position: relative;
+}
+#image-preview-product-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 1;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  border: none;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#selected-product-img {
+  width: 110px;
+  height: 100px;
+}
+
+#produc-submit-cancel-btn {
+  margin-top: -35px;
+  margin-left: -32px;
+}
+
+#toggle-position-product{
+  display: block;
+  width: 35px;
+  height: 20px;
+  border-radius: 20px;
+  position: absolute;
+  top: -13;
+  left:10px;
+
+}
+.toast-css{
+  position: fixed;
+  top: 70px;
+  left: 80%;
+  transform: translateX(-50%);
+}
+
+.button-style {
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  background: transparent;
+}
+
+.active-status {
+  color: green;
+}
+
+.inactive-status {
+  color: red;
+}
+
+.selected-edit-image {
+  max-width: 120px;
+  max-height: 90px;
+  transition: transform 0.3s; /* Add transition for smooth effect */
+}
+
+.selected-edit-image:hover {
+  transform: scale(1.2); /* Zoom in effect on hover */
+}
+
+.custom-dropdown-tree-select .dropdown-tree-container {
+  background-color: red; /* Set the background color to red */
+}
+
+.custom-dropdown-tree-select .dropdown-tree {
+  border: 1px solid #ccc; /* Add border styles as needed */
+  border-radius: 5px; /* Add border radius as needed */
+}
+
