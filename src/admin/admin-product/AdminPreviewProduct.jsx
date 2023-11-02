@@ -24,6 +24,25 @@ const ProductPreview = (props) => {
                     alt={`Product Image ${index}`}
                   />
                 ))}
+                {props.videos.map((video, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      height: "280px",
+                      width: "450px",
+                    }}
+                  >
+                    <video
+                      controls
+                      style={{ maxHeight: "100%", maxWidth: "100%" }}
+                    >
+                      <source
+                        src={URL.createObjectURL(video)}
+                        type={video.type}
+                      />
+                    </video>
+                  </div>
+                ))}
               </ImageCarousel>
             </Col>
             <Col sm={12}>
@@ -34,10 +53,7 @@ const ProductPreview = (props) => {
                 <strong>Category:</strong>
                 {props.category}
               </p>
-              <p>
-                <strong>Sub-Category:</strong>
-                {props.subCategory}
-              </p>
+
               <p>
                 <strong>Price:</strong>
                 {props.price}

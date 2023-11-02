@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import DropdownTreeSelect from "react-dropdown-tree-select";
+import "react-dropdown-tree-select/dist/styles.css";
 import NavigationBar from "../components/AdminSideNavBar";
 import TopNavbar from "../components/AdminTopNavBar";
 import "../../styles/Admin.css";
@@ -22,6 +24,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
   const [QuantityError, setQuantityError] = useState("");
   const [SKUError, setSKUError] = useState("");
   const [category, setCategory] = useState(editedData.category_id);
+  const [treeData, setTreeData] = useState([]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditedData({ ...editedData, [name]: value });
@@ -37,7 +40,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
 
   //======================
   const handleCategoryChange = (e) => {
-    const selectedCategoryId = e.target.value;
+    const selectedCategoryId = e.value;
     const selectedCategory = data.find(
       (item) => item.id === selectedCategoryId
     );
@@ -98,7 +101,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
     formData.append("id", editedData.product_id);
     formData.append("product_name", editedData.product_name);
     formData.append("category_id", editedData.category_id);
-    formData.append("sub_category", editedData.sub_category_id);
     formData.append("price", editedData.price);
     formData.append("discounted_price", editedData.discounted_price);
     formData.append("quantity", editedData.quantity);
@@ -120,12 +122,52 @@ export default function EditProduct({ record, onCancel, onSave }) {
   };
 
   useEffect(() => {
-    fetch(`${API_URL}/parent-category`)
-      .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error("Error fetching data:", error));
-    convertToDate();
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/categories`);
+        const data = response.data;
+        const formattedData = buildTree(data);
+        setTreeData(formattedData);
+        convertToDate()
+        
+      } catch (error) {
+        console.error("Error fetching data from the server:", error);
+      }
+    };
+    fetchData();
   }, []);
+  //=============================================
+  //function to tree structure of category and sub category
+  const buildTree = (categories, parent_id = null) => {
+    let tree = [];
+    let subTree = [];
+
+    categories
+      .filter((category) => category.parent_id === parent_id)
+      .forEach((category) => {
+        let children = buildTree(categories, category.category_id);
+        let node = {
+          label: category.category_name,
+          value: category.category_id,
+        };
+        if (children.length) {
+          node.children = children;
+        }
+        if (parent_id === null) {
+          tree.push(node); // Push to main category tree
+        } else {
+          subTree.push(node); // Push to subcategory tree
+        }
+      });
+
+    if (parent_id === null) {
+      return tree; // Return the main category tree
+    } else {
+      return subTree; // Return the subcategory tree
+    }
+  };
+
+  //============================================
   return (
     <div className="container-fluid">
       <div className="row">
@@ -160,43 +202,23 @@ export default function EditProduct({ record, onCancel, onSave }) {
             <div className="row mt-3">
               <div className="col-md-4">
                 <label>Category</label>
-
-                <select
+                <div
+                  style={{ height: "40px" }}
+                  className="mb-1 mr-sm-2"
                   id="category-form-input-field"
-                  name="category_id"
-                  className="form-control mb-1 mr-sm-2"
-                  value={editedData.category_id}
-                  onChange={handleCategoryChange}
                 >
-                  <option value=""> </option>
-                  {data.map((item, index) => (
-                    <option key={index} value={item.id}>
-                      {item.category_name}
-                    </option>
-                  ))}
-                </select>
+                  <DropdownTreeSelect
+                    data={treeData}
+                    onChange={handleCategoryChange}
+                  />
+                </div>
+
                 {categoryError && (
                   <div className="error-message">{categoryError}</div>
                 )}
               </div>
+
               <div className="col-md-4">
-                <label htmlFor="sub-category">Sub Category</label>
-                <select
-                  id="category-form-input-field"
-                  name="sub_category_id"
-                  className="form-control mb-1 mr-sm-2"
-                  value={editedData.sub_category_id}
-                  onChange={handleSubCategoryChange}
-                >
-                  <option value=""> </option>
-                  {data.map((item, index) => (
-                    <option key={index} value={item.id}>
-                      {item.category_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-2">
                 <label htmlFor="price">Price Per Unit</label>
                 <input
                   id="category-form-input-field"
@@ -211,7 +233,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                   <div className="error-message">{priceError}</div>
                 )}
               </div>
-              <div className="col-md-2">
+              <div className="col-md-4">
                 <label htmlFor="price">Discounted Price</label>
                 <input
                   id="category-form-input-field"

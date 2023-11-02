@@ -6,7 +6,7 @@ import "../../styles/Admin.css";
 import { useNavigate } from "react-router-dom";
 import { UserIconSvg } from "./SVG";
 
-function TopNavbar() {
+function TopNavbar({handleFilter}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -14,10 +14,10 @@ function TopNavbar() {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    // Handle the search functionality here with the 'searchQuery' state
-    console.log("Search query:", searchQuery);
+  const handleSearchChange = (e) => {
+    const query =e.target.value;
+    setSearchQuery(query)
+    handleFilter(query);
   };
   const navigate = useNavigate();
   const logout = () => {
@@ -31,7 +31,6 @@ function TopNavbar() {
         {/* Search Bar */}
         <form
           className="d-flex mx-auto col-md-6 "
-          onSubmit={handleSearchSubmit}
         >
           <input
             className="form-control me-2 "
@@ -40,11 +39,11 @@ function TopNavbar() {
             placeholder="Search"
             aria-label="Search"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
           />
 
           <button className="btn " id="responsive-button" type="submit">
-            Search
+            Search  
           </button>
         </form>
         {/* User Dropdown and Bell Icon */}

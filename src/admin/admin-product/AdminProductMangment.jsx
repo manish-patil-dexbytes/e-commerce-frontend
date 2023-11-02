@@ -13,18 +13,21 @@ import ToastComponent from "../components/Toast";
 
 export default function ProductManagment() {
   const [product, setProduct] = useState([]);
-  const [sortField, setSortField] = useState("product_name");
-  const [sortDirection, setSortDirection] = useState("ASC");
   const [isEditing, setIsEditing] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const[showToast,SetShowToast] = useState(false);
+  const [showToast, SetShowToast] = useState(false);
   const [message, setMessage] = useState("");
-
-  const getProduct = async () => {
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  
+  const getProduct = async (filter = "") => {
     try {
       const response = await axios.get(`${API_URL}/get-products`);
-      setProduct(response.data);
+      const filteredData = response.data.filter((item) =>
+        item.product_name.toLowerCase().includes(filter.toLowerCase())
+      );
+      setProduct(filteredData);
     } catch (error) {
       console.error(error);
     }
@@ -48,28 +51,62 @@ export default function ProductManagment() {
       console.error("Error deleting product:", error);
     }
   };
-//===================================================
-const handleToastClose =()=>SetShowToast(false);
-const handleErrorToast =()=>{
-  setMessage("Product Edited Successfully");
-  SetShowToast(true);
-}
-//=================================================
-  const handleSort = (column, sortDirection) => {
-    setSortField(column.selector);
-    setSortDirection(sortDirection.toUpperCase());
+  //==================================================
+
+  useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await axios.get(`${API_URL}/categories`);
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    }
+
+    fetchCategories();
+  }, []);
+  //==========================================================
+
+  const handleCategoryFilter = async (categoryId) => {
+    try {
+      const response = await axios.get(
+        `${API_URL}/get-products?category_id=${categoryId}`
+      );
+      setProduct(response.data);
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  //===================================================
+  const handleToastClose = () => SetShowToast(false);
+  const handleErrorToast = () => {
+    setMessage("Product Edited Successfully");
+    SetShowToast(true);
+  };
+  //=================================================
   const columns = [
     {
       name: "Product Name",
-      selector: (row) => row.product_name,
+      selector: (row) =>
+        row.product_name.charAt(0).toUpperCase() + row.product_name.slice(1),
+    },
+    {
+      name: "Category Name",
+      selector: (row) =>
+        row.category_name.charAt(0).toUpperCase() + row.category_name.slice(1),
     },
 
-    { name: "Quantity", selector: (row) => row.quantity },
-    { name: "Price/Unit", selector: (row) => row.price },
+    {
+      name: "Quantity",
+      selector: (row) => (row.quantity ? row.quantity : ""),
+      sortable: true,
+    },
+    { name: "Price/Unit", selector: (row) => row.price, sortable: true },
     {
       name: "Status",
-      selector: (row) => (row.status === 1 ? "published" : "unpublished"),
+      selector: (row) => (row.status === 1 ? "Published" : "Unpublished"),
+      sortable: true,
     },
     {
       name: "Actions",
@@ -94,11 +131,11 @@ const handleErrorToast =()=>{
               htmlFor={`toggle-${index}`}
               className="toggle-label"
               id="toggle-position-product"
-              style={{ borderRadius: "20px", top: -13 }}
+              style={{ borderRadius: "20px", top: -13, marginLeft: "-7px" }}
             />
           </div>
           <button
-            style={{ marginLeft: "50px", border: "none" }}
+            style={{ marginLeft: "40px", border: "none" }}
             onClick={() => handleDeleteProduct(row.product_id)}
           >
             <DeleteSvg />
@@ -112,12 +149,11 @@ const handleErrorToast =()=>{
     setSelectedRecord(record);
     setIsEditing(true);
     setSelectedId(record.product_id);
-    
   };
   const handleSaveEdit = async () => {
     try {
       await getProduct();
-      handleErrorToast()
+      handleErrorToast();
     } catch (error) {
       console.error(error);
     }
@@ -147,19 +183,17 @@ const handleErrorToast =()=>{
   //======================================
   return (
     <>
-        {
-      showToast &&(
+      {showToast && (
         <div className="toast-css">
-         <ToastComponent
+          <ToastComponent
             showToast={showToast}
             onClose={handleToastClose}
             message={message}
             delay={3000}
-            messageType= "success"
+            messageType="success"
           />
         </div>
-      )
-     }
+      )}
       {isEditing && selectedRecord && (
         <div className="edit-record-container">
           <EditProduct
@@ -183,7 +217,7 @@ const handleErrorToast =()=>{
             </nav>
 
             <main className="col-md-10 " style={{ textAlign: "left" }}>
-              <TopNavbar />
+              <TopNavbar handleFilter={getProduct} />
 
               <p className="page-heading">Product</p>
               <div className="col-md-11 table-css">
@@ -197,7 +231,7 @@ const handleErrorToast =()=>{
                     }}
                     className="mt-2 mb-2 add-btn"
                   >
-                    Add 
+                    Add
                   </Button>
                 </Link>
                 <div className="custom-table">
@@ -207,22 +241,7 @@ const handleErrorToast =()=>{
                       data={product}
                       pagination
                       paginationPerPage={9}
-                      sortServer
-                      onSort={handleSort}
                       sortIcon={<span>&nbsp;&#x21c5;</span>}
-                      defaultSortField={sortField}
-                      defaultSortAsc={sortDirection === "ASC"}
-                      style={{
-                        border: "2px solid black",
-                        fontWeight: "bold",
-                        backgroundColor: "transparent",
-                        width: "100%",
-                      }}
-                      customStyles={{
-                        table: {
-                          width: "100%",
-                        },
-                      }}
                     />
                   )}
                 </div>

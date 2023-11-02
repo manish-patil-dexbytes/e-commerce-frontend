@@ -521,12 +521,6 @@
   transform: scale(1.2); /* Zoom in effect on hover */
 }
 
-.custom-dropdown-tree-select .dropdown-tree-container {
-  background-color: red; /* Set the background color to red */
+.nav-item {
+  margin-top: 10px; /* Adjust the value as needed */
 }
-
-.custom-dropdown-tree-select .dropdown-tree {
-  border: 1px solid #ccc; /* Add border styles as needed */
-  border-radius: 5px; /* Add border radius as needed */
-}
-
