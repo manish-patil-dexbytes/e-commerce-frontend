@@ -120,7 +120,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
       console.error("Error:", error);
     }
   };
-
+ console.log(selectedImages)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -128,14 +128,14 @@ export default function EditProduct({ record, onCancel, onSave }) {
         const data = response.data;
         const formattedData = buildTree(data);
         setTreeData(formattedData);
-        convertToDate()
-        
+        convertToDate();
       } catch (error) {
         console.error("Error fetching data from the server:", error);
       }
     };
     fetchData();
   }, []);
+  console.log(typeof editedData.images);
   //=============================================
   //function to tree structure of category and sub category
   const buildTree = (categories, parent_id = null) => {
@@ -203,7 +203,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
               <div className="col-md-4">
                 <label>Category</label>
                 <div
-                  style={{ height: "40px" }}
+                 
                   className="mb-1 mr-sm-2"
                   id="category-form-input-field"
                 >
@@ -319,7 +319,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                 />
               </div>
               <div className="col-md-4 images" style={{ display: "flex" }}>
-                {selectedImages &&
+                {/* {selectedImages &&
                   selectedImages.map((image, index) => (
                     <div
                       key={index}
@@ -347,6 +347,64 @@ export default function EditProduct({ record, onCancel, onSave }) {
                       />
                     </div>
                   ))}
+                {  editedData && editedData.images ? (
+                  editedData.images
+                    .split(",")
+                    .map((imageName, index) => (
+                      <img
+                        key={index}
+                        src={`${API_URL}/product-image-uploads/${imageName.trim()}`}
+                        alt={editedData.category_name || ""}
+                        className="selected-edit-image"
+                      />
+                    ))
+                ) : (
+                  <p>No images found</p>
+                )} */}
+                {selectedImages && selectedImages.length > 0 ? (
+  selectedImages.map((image, index) => (
+    <div
+      key={index}
+      className="image-wrapper"
+      id="image-preview-product"
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "scale(1.1)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "scale(1)";
+      }}
+      onClick={() => previewImage(image)}
+    >
+      <button
+        className="remove-button"
+        id="image-preview-product-btn"
+        onClick={() => removeImage(index)}
+      >
+        X
+      </button>
+      <img
+        src={URL.createObjectURL(image)}
+        alt={`Image ${index}`}
+        id="selected-product-img"
+      />
+    </div>
+  ))
+) : editedData && editedData.images ? (
+  editedData.images
+    .split(",")
+    .map((imageName, index) => (
+      <img
+      key={index}
+      src={`${API_URL}/product-image-uploads/${imageName.trim()}`}
+      alt={editedData.category_name || ""}
+      className="selected-edit-image"
+      style={{ marginLeft: '10px', border: '1px solid black' }}
+    />
+    ))
+) : (
+  <p>No images found</p>
+)}
+
               </div>
             </div>
             <div className="row mt-3">

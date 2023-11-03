@@ -524,3 +524,27 @@
 .nav-item {
   margin-top: 10px; /* Adjust the value as needed */
 }
+/* Custom styles for the tree view */
+
+
+.mdl-demo .toggle {
+  font: normal normal normal 18px/1 "Material Icons";
+  color: #555;
+  white-space: pre;
+  margin-right: 4px;
+}
+.mdl-demo .tag-item .search{
+  
+ background: transparent !important;
+ border-color: transparent;
+}
+
+
+
+.mdl-demo .dropdown .dropdown-trigger {
+  padding: 1.5px !important;
+  max-height: 40px !important;
+  display: inline-block !important;
+  overflow: none !important;
+  border: none !important;
+}

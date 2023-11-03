@@ -19,8 +19,8 @@ export default function ProductManagment() {
   const [showToast, SetShowToast] = useState(false);
   const [message, setMessage] = useState("");
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
   const getProduct = async (filter = "") => {
     try {
       const response = await axios.get(`${API_URL}/get-products`);
@@ -235,7 +235,7 @@ export default function ProductManagment() {
                   </Button>
                 </Link>
                 <div className="custom-table">
-                  {product.length > 0 && (
+                  {product.length > 0 ? (
                     <DataTable
                       columns={columns}
                       data={product}
@@ -243,6 +243,8 @@ export default function ProductManagment() {
                       paginationPerPage={9}
                       sortIcon={<span>&nbsp;&#x21c5;</span>}
                     />
+                  ) : (
+                    <div>No products found.</div>
                   )}
                 </div>
               </div>

@@ -141,6 +141,20 @@ const validateEmail = (email, setError, setValidate) => {
     setValidate(true);
   }
 };
+ const ValidateMedia =(media ,setError,setValidate)=>{
+  if(media.length > 5){
+    setError("You can select a maximum of five media.")
+  setValidate(false)
+  setTimeout(() => {
+    setError("");
+  }, 3000);
+  return
+  }else{
+    setValidate(true);
+  }
+ };
+
+
 export {
   validateText,
   validateCategory,
@@ -153,4 +167,5 @@ export {
   validateCategoryInput,
   validateDescriptiionInput,
   validateImageInput,
+  ValidateMedia,
 };
