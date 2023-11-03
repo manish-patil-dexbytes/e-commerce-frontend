@@ -1,9 +1,11 @@
-
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
+import axios from "axios";
 import NavigationBar from "../components/AdminSideNavBar";
 import TopNavbar from "../components/AdminTopNavBar";
+import { validateCategory } from "../../helpers/validations";
+import { API_URL } from "../../helpers/config";
 
 export default function AddProductVarient() {
   const [varientName, setVarientName] = useState("");
@@ -32,14 +34,20 @@ export default function AddProductVarient() {
     setInputFields(updatedFields);
   };
 
-  const handleSubmit = () => {
-    const dataToSave = {
-      varientName: varientName,
-      attributes: inputFields.map((field) => field.value),
-    };
-    // Do something with the dataToSave here, such as sending it to an API endpoint or storing it in a database
-    console.log("Data to save:", dataToSave);
+  const handleSubmit = async (e) => {
+    // e.preventDefault();
+    // try {
+    //   const formData = {
+    //     variant: varientName,
+    //     attributes: inputFields.map((field) => field.value),
+    //   };
+    //   const response = await axios.post(`${API_URL}/add-variant`, formData);
+    //   console.log(response.data); // Log the response data for debugging
+    // } catch (error) {
+    //   console.error("Error in adding Variant:", error);
+    // }
   };
+
   return (
     <>
       <div className="container-fluid">
@@ -101,8 +109,8 @@ export default function AddProductVarient() {
                 onClick={addInputField}
                 className=" col-md-1 button-add-cat"
               >
-               Add +
-              </button> 
+                Add +
+              </button>
               <button
                 type="button"
                 onClick={handleSubmit}
