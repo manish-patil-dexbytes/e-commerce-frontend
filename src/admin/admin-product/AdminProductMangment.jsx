@@ -198,9 +198,9 @@ export default function ProductManagment() {
         <div className="edit-record-container">
           <EditProduct
             record={selectedRecord}
-            onSave={handleSaveEdit} // Removed unnecessary braces
+            onSave={handleSaveEdit} 
             onCancel={() => {
-              setSelectedRecord(null); // Updated state variable correctly
+              setSelectedRecord(null); 
               setIsEditing(false);
             }}
             categoryId={selectedId}

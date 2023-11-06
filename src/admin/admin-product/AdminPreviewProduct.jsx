@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Modal, Row, Col } from "react-bootstrap";
 import { Carousel as ImageCarousel } from "react-responsive-carousel";
@@ -14,7 +15,13 @@ const ProductPreview = (props) => {
           <Row>
             <Col
               sm={8}
-              style={{ marginLeft: "200px", height: "350px", width: "450px" }}
+              style={{
+                marginLeft: "200px",
+                height: "350px",
+                width: "450px",
+                display: "flex",
+                justifyContent: "center",
+              }}
             >
               <ImageCarousel showArrows={true} showThumbs={true}>
                 {props.images.map((image, index) => (
@@ -22,19 +29,23 @@ const ProductPreview = (props) => {
                     key={index}
                     src={URL.createObjectURL(image)}
                     alt={`Product Image ${index}`}
+                    style={{ maxHeight: 280, maxWidth: 450 }}
                   />
                 ))}
                 {props.videos.map((video, index) => (
                   <div
                     key={index}
                     style={{
-                      height: "280px",
-                      width: "450px",
+                      height: 280,
+                      width: 450,
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
                     <video
                       controls
-                      style={{ maxHeight: "100%", maxWidth: "100%" }}
+                      style={{ maxHeight: 280, maxWidth: 450 }}
                     >
                       <source
                         src={URL.createObjectURL(video)}

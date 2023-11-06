@@ -154,6 +154,44 @@ const validateEmail = (email, setError, setValidate) => {
   }
  };
 
+const validateVariantName =(text,setError,setValidate)=>{
+  if(!text){
+    setError("Enter Variant Name")
+    setValidate(false)
+    setTimeout(()=>{
+      setError("");
+    },3000);
+    return
+  }else{
+    setValidate(true);
+  }
+};
+
+ const validateVariantAttribute = (attribute, setError, setValidate) => {
+  if (!Array.isArray(attribute) || attribute.length === 0) {
+    setError("Please enter at least one attribute");
+    setValidate(false);
+    setTimeout(() => {
+      setError("");
+    }, 3000);
+    return;
+  } else {
+    setValidate(true);
+  }
+};
+const validateAttributeNotEmpty = (attribute, setError, setValidate) => {
+  console.log(attribute)
+  if (attribute=='') {
+    setError("Enter attribute name");
+    setValidate(false);
+    setTimeout(() => {
+      setError("");
+    }, 3000);
+    return;
+  } else {
+    setValidate(true);
+  }
+};
 
 export {
   validateText,
@@ -168,4 +206,7 @@ export {
   validateDescriptiionInput,
   validateImageInput,
   ValidateMedia,
+  validateVariantName,
+  validateVariantAttribute,
+  validateAttributeNotEmpty,
 };

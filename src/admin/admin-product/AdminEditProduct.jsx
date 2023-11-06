@@ -51,17 +51,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
     });
   };
   //==========================
-  const handleSubCategoryChange = (e) => {
-    const selectedSubCategoryId = e.target.value;
-    const selectedSubCategory = data.find(
-      (item) => item.id === selectedSubCategoryId
-    );
-    setEditedData({
-      ...editedData,
-      sub_category_id: selectedSubCategoryId,
-      sub_category: selectedSubCategory,
-    });
-  };
 
   const onSelectFile = (e) => {
     const files = e.target.files;

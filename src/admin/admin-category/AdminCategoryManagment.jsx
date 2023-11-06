@@ -160,8 +160,6 @@ export default function AdminCatMangment() {
     }
   };
   const handleToastClose = () => setShowToast(false);
-  console.log(selectedRecord);
-
   return (
     <>
       {showToast && (

@@ -199,8 +199,7 @@ function AddCategory() {
                 </div>
                 <div className="row mt-3" style={{ marginLeft: "19px" }}>
                   <div className=" col-md-3">
-                    
-                    <label for="image" >Image Upload*</label>
+                    <label for="image">Image Upload*</label>
                     <input
                       type="file"
                       className="form-control-file"
@@ -208,7 +207,8 @@ function AddCategory() {
                       name="image"
                       onChange={(e) => {
                         handleImage(e);
-                        handleImagePreview(e);  }}
+                        handleImagePreview(e);
+                      }}
                     />
                     {imageError && (
                       <div className="error-message">{imageError}</div>
