@@ -43,10 +43,6 @@ function AddCategory() {
     setMessage("Category Already Exist..");
     SetShowToast(true);
   };
-  const handleSucessToast = () => {
-    setMessage("Category Added Successfully");
-    setMessageColor("success");
-  };
   // Function to handle image preview when a file is selected
   //======================================================
   const handleImagePreview = (e) => {
@@ -56,7 +52,6 @@ function AddCategory() {
       reader.onload = (event) => {
         setImagePreview(event.target.result);
       };
-
       reader.readAsDataURL(selectedImage);
     } else {
       setImagePreview(null);
@@ -84,11 +79,7 @@ function AddCategory() {
   const onSubmit = async (e) => {
     e.preventDefault();
     validateCategoryInput(category, setCategoryError, setCategoryValidate);
-    validateDescriptiionInput(
-      description,
-      setDescriptionError,
-      setDescriptionValidate
-    );
+    validateDescriptiionInput( description,setDescriptionError,setDescriptionValidate);
     validateImageInput(image, setImageError, setImageValidate);
     if (
       CategoryValidate === true &&
@@ -118,10 +109,6 @@ function AddCategory() {
       .then((data) => setData(data))
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
-
-  const handleSelectChange = (e) => {
-    setSelectedItem(e.target.value);
-  };
 
   return (
     <>
@@ -250,5 +237,4 @@ function AddCategory() {
     </>
   );
 }
-
 export default AddCategory;

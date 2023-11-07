@@ -112,7 +112,7 @@ export default function AddProduct() {
       try {
         const response = await axios.post(`${API_URL}/add-product`, formData);
         // Handle the response as needed
-        navigate("/admin/product");
+        navigate(-1);
       } catch (error) {
         console.error("Error uploading product:", error);
         handleErrorToast();
