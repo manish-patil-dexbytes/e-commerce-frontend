@@ -73,17 +73,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
     reader.readAsDataURL(image); //creating an URL for image src in preview div
   };
 
-  //function to remove selected image
-  const removeImage = (index) => {
-    const updatedImages = [...selectedImages];
-    updatedImages.splice(index, 1);
-    setSelectedImages(
-      updatedImages.map((image, idx) => ({
-        ...image,
-        index: idx, // shift the indexes after deletion
-      }))
-    );
-  };
+  
   const onSubmit = async (e) => {
     e.preventDefault();
     var formData = new FormData();
@@ -305,48 +295,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
                 />
               </div>
               <div className="col-md-4 images" style={{ display: "flex" }}>
-                {/* {selectedImages &&
-                  selectedImages.map((image, index) => (
-                    <div
-                      key={index}
-                      className="image-wrapper"
-                      id="image-preview-product"
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "scale(1.1)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "scale(1)";
-                      }}
-                      onClick={() => previewImage(image)}
-                    >
-                      <button
-                        className="remove-button"
-                        id="image-preview-product-btn"
-                        onClick={() => removeImage(index)}
-                      >
-                        X
-                      </button>
-                      <img
-                        src={URL.createObjectURL(image)}
-                        alt={`Image ${index}`}
-                        id="selected-product-img"
-                      />
-                    </div>
-                  ))}
-                {  editedData && editedData.images ? (
-                  editedData.images
-                    .split(",")
-                    .map((imageName, index) => (
-                      <img
-                        key={index}
-                        src={`${API_URL}/product-image-uploads/${imageName.trim()}`}
-                        alt={editedData.category_name || ""}
-                        className="selected-edit-image"
-                      />
-                    ))
-                ) : (
-                  <p>No images found</p>
-                )} */}
                 {selectedImages && selectedImages.length > 0 ? (
                   selectedImages.map((image, index) => (
                     <div
@@ -361,13 +309,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                       }}
                       onClick={() => previewImage(image)}
                     >
-                      <button
-                        className="remove-button"
-                        id="image-preview-product-btn"
-                        onClick={() => removeImage(index)}
-                      >
-                        X
-                      </button>
+                      
                       <img
                         src={URL.createObjectURL(image)}
                         alt={`Image ${index}`}
@@ -376,22 +318,29 @@ export default function EditProduct({ record, onCancel, onSave }) {
                     </div>
                   ))
                 ) : editedData && editedData.images ? (
-                  editedData.images
-                    .split(",")
-                    .map((imageName, index) => (
-                      <img
-                        key={index}
-                        src={`${API_URL}/product-image-uploads/${imageName.trim()}`}
-                        alt={editedData.category_name || ""}
-                        className="selected-edit-image"
-                        style={{
-                          marginLeft: "10px",
-                          border: "1px solid black",
-                        }}
-                      />
-                    ))
+                  editedData.images.split(",").map((imageName, index) => (
+                    <img
+                      key={index}
+                      src={`${API_URL}/product-image-uploads/${imageName.trim()}`}
+                      alt={editedData.category_name || ""}
+                      className="selected-edit-image"
+                      style={{
+                        marginLeft: "10px",
+                        border: "1px solid black",
+                      }}
+                    />
+                  ))
                 ) : (
-                  <p>No images found</p>
+                  <img
+                    src={
+                      "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
+                    }
+                    className="selected-edit-image"
+                    style={{
+                      marginLeft: "10px",
+                      border: "1px solid black",
+                    }}
+                  />
                 )}
               </div>
             </div>

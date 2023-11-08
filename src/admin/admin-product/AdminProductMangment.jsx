@@ -25,7 +25,8 @@ export default function ProductManagment() {
     try {
       const response = await axios.get(`${API_URL}/get-products`);
       const filteredData = response.data.filter((item) =>
-        item.product_name.toLowerCase().includes(filter.toLowerCase())
+        item.product_name.toLowerCase().includes(filter.toLowerCase()) ||
+        (item.category_name && item.category_name.toLowerCase().includes(filter.toLowerCase()))
       );
       setProduct(filteredData);
     } catch (error) {
@@ -67,18 +68,6 @@ export default function ProductManagment() {
   }, []);
   //==========================================================
 
-  const handleCategoryFilter = async (categoryId) => {
-    try {
-      const response = await axios.get(
-        `${API_URL}/get-products?category_id=${categoryId}`
-      );
-      setProduct(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  //===================================================
   const handleToastClose = () => SetShowToast(false);
   const handleErrorToast = () => {
     setMessage("Product Edited Successfully");

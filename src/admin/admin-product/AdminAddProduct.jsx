@@ -1,4 +1,3 @@
-
 import DropdownTreeSelect from "react-dropdown-tree-select";
 import "react-dropdown-tree-select/dist/styles.css";
 import React, { useState, useEffect } from "react";
@@ -19,8 +18,7 @@ import {
   validatPriceDiscount,
   validateQuantityNotLessThanZero,
   validateAlphaNumeric,
-  ValidateMedia
-  
+  ValidateMedia,
 } from "../../helpers/validations";
 import ToastComponent from "../components/Toast";
 export default function AddProduct() {
@@ -36,7 +34,7 @@ export default function AddProduct() {
   const [sku, setSKU] = useState(""); //set sku
   const [selectedImages, setSelectedImages] = useState([]); // set selected images in array
   const [published, setPublished] = useState(1); //staus
-  
+
   //=====================================================
   const [selectedVideos, setSelectedVideos] = useState([]);
   const mediaFiles = [...selectedImages, ...selectedVideos];
@@ -48,17 +46,17 @@ export default function AddProduct() {
   const [discountError, setDiscountError] = useState("");
   const [QuantityError, setQuantityError] = useState("");
   const [SKUError, setSKUError] = useState("");
-  const[mediaError,setMediaError]=useState("");
+  const [mediaError, setMediaError] = useState("");
   const [showToast, SetShowToast] = useState(false);
   const [message, setMessage] = useState("");
   const [treeData, setTreeData] = useState([]);
-  const[validateProduct,setValidateProduct]=useState(false)
+  const [validateProduct, setValidateProduct] = useState(false);
   const [validateSku, setValidateSku] = useState(false);
-  const[validatePrice,setValidatePrice]=useState(false);
-  const[validateDiscount,setValidateDiscount]=useState(false);
-  const[validateQuantity,setValidateQuantity]=useState(false);
-  const[validateCategory,setValidateCategory ] = useState(false)
-  const[validateMedia,setValidateMedia] = useState(false);
+  const [validatePrice, setValidatePrice] = useState(false);
+  const [validateDiscount, setValidateDiscount] = useState(false);
+  const [validateQuantity, setValidateQuantity] = useState(false);
+  const [validateCategory, setValidateCategory] = useState(false);
+  const [validateMedia, setValidateMedia] = useState(false);
   const navigate = useNavigate();
   //=======================================================
   // all the api handles
@@ -80,7 +78,7 @@ export default function AddProduct() {
   const onSubmit = async (e) => {
     e.preventDefault();
     validateText(product_name, setProductError, setValidateProduct);
-    validateText(selectedCategory,setCategoryError,setValidateCategory);
+    validateText(selectedCategory, setCategoryError, setValidateCategory);
     validateAlphaNumeric(sku, setSKUError, setValidateSku);
     validateText(price, setPriceError, setValidatePrice);
     validateText(discount, setDiscountError, setValidateDiscount);
@@ -88,11 +86,28 @@ export default function AddProduct() {
     validateText(sku, setSKUError, setValidateSku);
     validateNumber(price, setPriceError, setValidatePrice);
     validateNumber(discount, setDiscountError, setValidateDiscount);
-    validatPriceDiscount(price, discount, setDiscountError, setValidateDiscount );
+    validatPriceDiscount(
+      price,
+      discount,
+      setDiscountError,
+      setValidateDiscount
+    );
     validateNumber(quantity, setQuantityError, setValidateQuantity);
-    validateQuantityNotLessThanZero(quantity, setQuantityError, setValidateQuantity);
-    ValidateMedia(mediaFiles,setMediaError,setValidateMedia);
-    if (validateProduct ===true && validateSku ===true && validatePrice ===true && validateDiscount === true && validateQuantity===true && validateCategory ===true && validateMedia ===true) {
+    validateQuantityNotLessThanZero(
+      quantity,
+      setQuantityError,
+      setValidateQuantity
+    );
+    ValidateMedia(mediaFiles, setMediaError, setValidateMedia);
+    if (
+      validateProduct === true &&
+      validateSku === true &&
+      validatePrice === true &&
+      validateDiscount === true &&
+      validateQuantity === true &&
+      validateCategory === true &&
+      validateMedia === true
+    ) {
       //appending form data into an formData variable
       var formData = new FormData();
       formData.append("product_name", product_name);
@@ -111,7 +126,6 @@ export default function AddProduct() {
       }
       try {
         const response = await axios.post(`${API_URL}/add-product`, formData);
-        // Handle the response as needed
         navigate(-1);
       } catch (error) {
         console.error("Error uploading product:", error);
@@ -206,12 +220,6 @@ export default function AddProduct() {
     const selectedVids = selectedFiles.filter((file) =>
       file.type.includes("video")
     );
-    // const combinedMedia = [...selectedImages, ...selectedVideos];
-    // if (combinedMedia.length > 5) {
-    //   // Handle the case when more than five images are selected
-    //   setMediaError("You can select a maximum of five images.");
-    //   return;
-    // }
     setSelectedImages(selectedImages);
     setSelectedVideos(selectedVids);
   };
@@ -256,7 +264,6 @@ export default function AddProduct() {
       );
     }
   };
-
   //=========================================
   //on cancel handler
   const onCancel = (e) => {
@@ -264,9 +271,6 @@ export default function AddProduct() {
   };
 
   //==========================================
-  const customStyles = {};
-
-  //=============================================
   return (
     <>
       {showToast && (
@@ -362,9 +366,9 @@ export default function AddProduct() {
                   >
                     <DropdownTreeSelect
                       data={treeData}
+                      value={selectedCategory}
                       onChange={handleCat}
                       className="mdl-demo"
-                     
                     />
                   </div>
                   {categoryError && (
@@ -372,7 +376,7 @@ export default function AddProduct() {
                   )}
                 </div>
 
-                <div className="col-md-3">
+                <div className="col-md-4">
                   <label htmlFor="price">Price Per Unit*</label>
                   <input
                     id="category-form-input-field"
@@ -429,7 +433,7 @@ export default function AddProduct() {
                   {SKUError && <div className="error-message">{SKUError}</div>}
                 </div>
                 <div className="col-md-4">
-                  <label htmlFor="price">Launch Date</label>
+                  <label htmlFor="price">Launch Date*</label>
                   <div
                     id="category-form-input-field"
                     className="form-control mb-1 mr-sm-2"
@@ -467,7 +471,7 @@ export default function AddProduct() {
                     accept="image/*, video/*"
                     onChange={onSelectFile}
                   />
-                    {mediaError && (
+                  {mediaError && (
                     <div className="error-message">{mediaError}</div>
                   )}
                 </div>
@@ -499,7 +503,7 @@ export default function AddProduct() {
                             width: "100%",
                             height: "100%",
                             objectFit: "cover",
-                            border: '1px solid black',
+                            border: "1px solid black",
                           }}
                         />
                       </div>
@@ -514,7 +518,7 @@ export default function AddProduct() {
                           width: "100px",
                           margin: "5px",
                           overflow: "hidden",
-                          border: '1px solid black',
+                          border: "1px solid black",
                         }}
                       >
                         <video

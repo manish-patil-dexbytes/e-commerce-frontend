@@ -29,10 +29,13 @@ export default function AdminCatMangment() {
   };
 
   //========================================================
-  const getCategory = async () => {
+  const getCategory = async (filter ="") => {
     try {
       const response = await axios.get(`${API_URL}/get-categories`);
-      setCategory(response.data);
+      const filteredData = response.data.filter((item) =>
+        item.category_name.toLowerCase().includes(filter.toLowerCase())
+      );
+      setCategory(filteredData);
     } catch (error) {
       console.error(error);
     }
@@ -185,7 +188,7 @@ export default function AdminCatMangment() {
                   src={
                     viewCategory && viewCategory.image
                       ? `${API_URL}/category-image-uploades/${viewCategory.image}`
-                      : ""
+                      : "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
                   }
                   alt={viewCategory ? viewCategory.category_name : ""}
                   className="view-modal-img"
@@ -270,7 +273,7 @@ export default function AdminCatMangment() {
 
             {/* Main Content */}
             <main className="col-md-10 ">
-              <TopNavbar />
+              <TopNavbar  handleFilter={getCategory}/>
               <p className="page-heading">Category</p>
               <div className="col-md-11 table-css">
                 <Link to="/admin/category/add-category">

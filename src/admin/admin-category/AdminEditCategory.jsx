@@ -19,6 +19,7 @@ export default function EditRecord({
   const [validate, setValidate] = useState();
   const [categoryError, setCategoryError] = useState(" ");
   const [parent, setParent] = useState(editedData.parent_id);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     // Make an API request to fetch data
@@ -40,6 +41,7 @@ export default function EditRecord({
   //function to  handle changes in image upload
   const handleImageChange = (e) => {
     const selectedFile = e.target.files[0];
+    setSelectedImage(URL.createObjectURL(selectedFile));
     setImageFile(selectedFile);
   };
   console.log(editedData);
@@ -52,7 +54,7 @@ export default function EditRecord({
       const formData = new FormData();
       formData.append("id", categoryId); // Assuming editedData contains the ID
       formData.append("category_name", editedData.category_name);
-      formData.append("parent_category", parent);
+      formData.append("parent_category", editedData.parent_id);
       formData.append("status", editedData.status);
       formData.append("description", editedData.description);
       if (imageFile) {
@@ -80,11 +82,10 @@ export default function EditRecord({
   };
 
   const handleParent = (e) => {
-    setParent(e.target.value);
+    const selectedParentId = e.target.value;
+    setEditedData({ ...editedData, parent_id: selectedParentId });
   };
-  // const handleParent = (e) => {
-  //   const selectedParentId = parseInt(e.target.value); // Convert the selected value to an integer
-  //   setParent({ ...editedData, parent_id: selectedParentId });
+
   // };
 
   return (
@@ -121,6 +122,7 @@ export default function EditRecord({
 
                 <div className="col-md-5">
                   <label>Parent Category:</label>
+
                   <select
                     id="category-form-input-field"
                     name="parent"
@@ -130,11 +132,15 @@ export default function EditRecord({
                     onChange={handleParent}
                   >
                     <option value=""> </option>
-                    {data.map((item, index) => (
-                      <option key={index} value={item.id}>
-                        {item.category_name}
-                      </option>
-                    ))}
+                    {data
+                      .filter((item) => item.id !== categoryId) // Exclude the current category from the list
+                      .map((item, index) => (
+                        <option key={index} value={item.id}>
+                          {item.parent_name
+                            ? item.parent_name
+                            : item.category_name}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
@@ -164,9 +170,11 @@ export default function EditRecord({
                   />
                   <img
                     src={
-                      editedData && editedData.image
+                      selectedImage
+                        ? selectedImage
+                        : editedData && editedData.image
                         ? `${API_URL}/category-image-uploades/${editedData.image}`
-                        : ""
+                        : "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
                     }
                     alt={editedData ? editedData.category_name : ""}
                     className="selected-edit-image"

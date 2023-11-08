@@ -15,6 +15,7 @@ function TopNavbar({handleFilter}) {
   };
 
   const handleSearchChange = (e) => {
+    e.preventDefault();
     const query =e.target.value;
     setSearchQuery(query)
     handleFilter(query);
@@ -42,7 +43,7 @@ function TopNavbar({handleFilter}) {
             onChange={handleSearchChange}
           />
 
-          <button className="btn " id="responsive-button" type="submit">
+          <button  disabled className="btn " id="responsive-button" type="submit">
             Search  
           </button>
         </form>

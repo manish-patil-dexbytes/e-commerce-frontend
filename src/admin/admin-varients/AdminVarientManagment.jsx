@@ -15,18 +15,21 @@ export default function ProductVariant() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
+ 
+    const getVariant = async (filter ="") => {
       try {
         const response = await axios.get(`${API_URL}/get-variant`);
-        setData(response.data);
+        const filteredData = response.data.filter((item) =>
+        item.name.toLowerCase().includes(filter.toLowerCase())
+      );
+        setData(filteredData);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
     };
-
-    fetchData();
-  }, []);
+  useEffect(()=>{
+    getVariant()
+  },[]);
 
   const handleDeleteVariant = async (id) => {
     try {
@@ -109,7 +112,7 @@ const handleSaveEdit = async () => {
             </nav>
 
             <main className="col-md-10 " style={{ textAlign: "left" }}>
-              <TopNavbar />
+              <TopNavbar handleFilter={getVariant}/>
 
               <p className="page-heading">Variants</p>
               <div className="col-md-11 table-css">

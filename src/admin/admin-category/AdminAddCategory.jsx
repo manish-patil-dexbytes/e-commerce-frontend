@@ -80,11 +80,11 @@ function AddCategory() {
     e.preventDefault();
     validateCategoryInput(category, setCategoryError, setCategoryValidate);
     validateDescriptiionInput( description,setDescriptionError,setDescriptionValidate);
-    validateImageInput(image, setImageError, setImageValidate);
+    // validateImageInput(image, setImageError, setImageValidate);
     if (
       CategoryValidate === true &&
-      DescriptionValidate === true &&
-      ImageValidate === true
+      DescriptionValidate === true
+  
     ) {
       var formData = new FormData();
       formData.append("category_name", category);
@@ -186,7 +186,7 @@ function AddCategory() {
                 </div>
                 <div className="row mt-3" style={{ marginLeft: "19px" }}>
                   <div className=" col-md-3">
-                    <label for="image">Image Upload*</label>
+                    <label for="image">Image Upload</label>
                     <input
                       type="file"
                       className="form-control-file"
