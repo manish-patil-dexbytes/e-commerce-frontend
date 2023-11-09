@@ -1,7 +1,5 @@
-import DropdownTreeSelect from "react-dropdown-tree-select";
 import "react-dropdown-tree-select/dist/styles.css";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Button } from "react-bootstrap";
 import "../../styles/Admin.css";
 import DatePicker from "react-datepicker";
@@ -11,7 +9,7 @@ import NavigationBar from "../components/AdminSideNavBar";
 import TopNavbar from "../components/AdminTopNavBar";
 import { API_URL } from "../../helpers/config";
 import ProductPreview from "./AdminPreviewProduct";
-
+import TreeSelect from "rc-tree-select";
 import {
   validateText,
   validateNumber,
@@ -21,6 +19,8 @@ import {
   ValidateMedia,
 } from "../../helpers/validations";
 import ToastComponent from "../components/Toast";
+import { addProduct, getCategories } from "../../helpers/api/product.Api"
+
 export default function AddProduct() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categoryName, setCategoryName] = useState(""); //state to pass category  name to preview model
@@ -64,8 +64,7 @@ export default function AddProduct() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/categories`);
-        const data = response.data;
+        const data = await getCategories();
         const formattedData = buildTree(data);
         setTreeData(formattedData);
       } catch (error) {
@@ -125,7 +124,7 @@ export default function AddProduct() {
         formData.append("images", mediaFiles[i]);
       }
       try {
-        const response = await axios.post(`${API_URL}/add-product`, formData);
+        const response = await addProduct(formData);
         navigate(-1);
       } catch (error) {
         console.error("Error uploading product:", error);
@@ -179,8 +178,9 @@ export default function AddProduct() {
   };
 
   const handleCat = (selectedNodes) => {
+    console.log("selectedNodes", selectedNodes);
     if (selectedNodes) {
-      setSelectedCategory(selectedNodes.value);
+      setSelectedCategory(selectedNodes);
       setCategoryName(selectedNodes.label);
     } else {
       setSelectedCategory(null);
@@ -223,7 +223,6 @@ export default function AddProduct() {
     setSelectedImages(selectedImages);
     setSelectedVideos(selectedVids);
   };
-
   //==========================================
   //image preview and handling
   const handlePreview = () => {
@@ -357,18 +356,26 @@ export default function AddProduct() {
                 </div>
               </div>
               <div className="row mt-3">
-                <div className="col-md-5">
+                <div className="col-md-4">
                   <label>Category*</label>
                   <div
                     style={{ height: "40px" }}
-                    className="mb-1 mr-sm-2"
+                    className="mb-1 mr-sm-2 form-control"
                     id="category-form-input-field"
                   >
-                    <DropdownTreeSelect
-                      data={treeData}
-                      value={selectedCategory}
+                    <TreeSelect
+                      treeData={treeData}
                       onChange={handleCat}
-                      className="mdl-demo"
+                      placeholder={<span>Please Select a Category</span>}
+                      style={{ width: 300 }}
+                      dropdownStyle={{
+                        maxHeight: 200,
+                        overflow: "auto",
+                        zIndex: 1500,
+                      }}
+                      showSearch={false}
+                      allowClear
+                      switcherIcon
                     />
                   </div>
                   {categoryError && (
@@ -390,7 +397,7 @@ export default function AddProduct() {
                     <div className="error-message">{priceError}</div>
                   )}
                 </div>
-                <div className="col-md-3">
+                <div className="col-md-4">
                   <label htmlFor="price">Discounted Price*</label>
                   <input
                     id="category-form-input-field"

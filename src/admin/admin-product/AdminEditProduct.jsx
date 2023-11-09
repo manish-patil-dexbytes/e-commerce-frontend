@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import DropdownTreeSelect from "react-dropdown-tree-select";
-import "react-dropdown-tree-select/dist/styles.css";
 import NavigationBar from "../components/AdminSideNavBar";
 import TopNavbar from "../components/AdminTopNavBar";
 import "../../styles/Admin.css";
@@ -8,28 +6,48 @@ import { Outlet } from "react-router-dom";
 import { API_URL } from "../../helpers/config";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import axios from "axios";
+import TreeSelect from "rc-tree-select";
+import {
+  validateText,
+  validateNumber,
+  validatPriceDiscount,
+  validateQuantityNotLessThanZero,
+  validateAlphaNumeric,
+  ValidateMedia,
+} from "../../helpers/validations";
+import { getCategories ,editProduct } from "../../helpers/api/product.Api"
 
 export default function EditProduct({ record, onCancel, onSave }) {
   const [editedData, setEditedData] = useState({ ...record });
-  const [data, setData] = useState([]);
   const [dbDate, setDbdate] = useState();
-
-  const [categoryError, setCategoryError] = useState(" ");
   const [launchDate, setLaunchDate] = useState(dbDate);
   const [selectedImages, setSelectedImages] = useState([]); // set selected images in array
+
+  //==============================================
+  //validation states
   const [productError, setProductError] = useState("");
+  const [categoryError, setCategoryError] = useState("");
   const [priceError, setPriceError] = useState("");
   const [discountError, setDiscountError] = useState("");
   const [QuantityError, setQuantityError] = useState("");
   const [SKUError, setSKUError] = useState("");
-  const [category, setCategory] = useState(editedData.category_id);
+  const [mediaError, setMediaError] = useState("");
+  const [showToast, SetShowToast] = useState(false);
+  const [message, setMessage] = useState("");
   const [treeData, setTreeData] = useState([]);
+  const [validateProduct, setValidateProduct] = useState(false);
+  const [validateSku, setValidateSku] = useState(false);
+  const [validatePrice, setValidatePrice] = useState(false);
+  const [validateDiscount, setValidateDiscount] = useState(false);
+  const [validateQuantity, setValidateQuantity] = useState(false);
+  const [validateCategory, setValidateCategory] = useState(false);
+  const [validateMedia, setValidateMedia] = useState(false);
+  //==============================================
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditedData({ ...editedData, [name]: value });
   };
-  //==========================
+
   const convertToDate = () => {
     const dateParts = record.lauch_date.split("/");
     const validDate = new Date(
@@ -39,15 +57,10 @@ export default function EditProduct({ record, onCancel, onSave }) {
   };
 
   //======================
-  const handleCategoryChange = (e) => {
-    const selectedCategoryId = e.value;
-    const selectedCategory = data.find(
-      (item) => item.id === selectedCategoryId
-    );
+  const handleCategoryChange = (selectedNodes) => {
     setEditedData({
       ...editedData,
-      category_id: selectedCategoryId,
-      category: selectedCategory,
+      category_id: selectedNodes,
     });
   };
   //==========================
@@ -73,38 +86,77 @@ export default function EditProduct({ record, onCancel, onSave }) {
     reader.readAsDataURL(image); //creating an URL for image src in preview div
   };
 
-  
   const onSubmit = async (e) => {
     e.preventDefault();
-    var formData = new FormData();
-    formData.append("id", editedData.product_id);
-    formData.append("product_name", editedData.product_name);
-    formData.append("category_id", editedData.category_id);
-    formData.append("price", editedData.price);
-    formData.append("discounted_price", editedData.discounted_price);
-    formData.append("quantity", editedData.quantity);
-    formData.append("SKU", editedData.sku);
-    formData.append("launch_date", launchDate);
-    formData.append("description", editedData.description);
 
-    // Append each selected image individually
-    for (let i = 0; i < selectedImages.length; i++) {
-      formData.append("media", selectedImages[i]); // Append each image individually
-    }
+    validateText(editedData.product_name, setProductError, setValidateProduct);
+    validateText(editedData.category_id, setCategoryError, setValidateCategory);
+    validateAlphaNumeric(editedData.sku, setSKUError, setValidateSku);
+    validateText(editedData.price, setPriceError, setValidatePrice);
+    validateText(
+      editedData.discounted_price,
+      setDiscountError,
+      setValidateDiscount
+    );
+    validateText(editedData.quantity, setQuantityError, setValidateQuantity);
+    validateText(editedData.sku, setSKUError, setValidateSku);
+    validateNumber(editedData.price, setPriceError, setValidatePrice);
+    validateNumber(
+      editedData.discounted_price,
+      setDiscountError,
+      setValidateDiscount
+    );
+    validatPriceDiscount(
+      editedData.price,
+      editedData.discounted_price,
+      setDiscountError,
+      setValidateDiscount
+    );
+    validateNumber(editedData.quantity, setQuantityError, setValidateQuantity);
+    validateQuantityNotLessThanZero(
+      editedData.quantity,
+      setQuantityError,
+      setValidateQuantity
+    );
+    ValidateMedia(selectedImages, setMediaError, setValidateMedia);
+    if (
+      validateProduct === true &&
+      validateSku === true &&
+      validatePrice === true &&
+      validateDiscount === true &&
+      validateQuantity === true &&
+      validateCategory === true &&
+      validateMedia === true
+    ) {
+      var formData = new FormData();
+      formData.append("id", editedData.product_id);
+      formData.append("product_name", editedData.product_name);
+      formData.append("category_id", editedData.category_id);
+      formData.append("price", editedData.price);
+      formData.append("discounted_price", editedData.discounted_price);
+      formData.append("quantity", editedData.quantity);
+      formData.append("SKU", editedData.sku);
+      formData.append("launch_date", launchDate);
+      formData.append("description", editedData.description);
 
-    try {
-      const response = await axios.put(`${API_URL}/edit-product`, formData);
-      onSave();
-    } catch (error) {
-      console.error("Error:", error);
+      // Append each selected image individually
+      for (let i = 0; i < selectedImages.length; i++) {
+        formData.append("media", selectedImages[i]); // Append each image individually
+      }
+
+      try {
+        const response = await editProduct(formData);
+        onSave();
+      } catch (error) {
+        console.error("Error:", error);
+      }
     }
   };
-  console.log(selectedImages);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/categories`);
-        const data = response.data;
+        const data = await getCategories();
+       
         const formattedData = buildTree(data);
         setTreeData(formattedData);
         convertToDate();
@@ -114,7 +166,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
     };
     fetchData();
   }, []);
-  console.log(typeof editedData.images);
   //=============================================
   //function to tree structure of category and sub category
   const buildTree = (categories, parent_id = null) => {
@@ -181,11 +232,25 @@ export default function EditProduct({ record, onCancel, onSave }) {
             <div className="row mt-3">
               <div className="col-md-4">
                 <label>Category</label>
-                <div className="mb-1 mr-sm-2" id="category-form-input-field">
-                  <DropdownTreeSelect
-                    data={treeData}
+                <div
+                  style={{ height: "40px" }}
+                  className=" form-control mb-1 mr-sm-2 "
+                  id="category-form-input-field"
+                >
+                  <TreeSelect
+                    treeData={treeData}
+                    value={editedData.category_id}
                     onChange={handleCategoryChange}
-                    className="mdl-demo"
+                    placeholder={<span>Please Select a Category</span>}
+                    style={{ width: 300 }}
+                    dropdownStyle={{
+                      maxHeight: 200,
+                      overflow: "auto",
+                      zIndex: 1500,
+                    }}
+                    showSearch={false}
+                    allowClear
+                    switcherIcon
                   />
                 </div>
 
@@ -214,7 +279,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                 <input
                   id="category-form-input-field"
                   type="text"
-                  name="discountedprice"
+                  name="discounted_price"
                   className="form-control mb-1 mr-sm-2"
                   value={editedData.discounted_price}
                   onChange={handleInputChange}
@@ -309,7 +374,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
                       }}
                       onClick={() => previewImage(image)}
                     >
-                      
                       <img
                         src={URL.createObjectURL(image)}
                         alt={`Image ${index}`}

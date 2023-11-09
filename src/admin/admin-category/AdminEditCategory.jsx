@@ -5,6 +5,7 @@ import "../../styles/Admin.css";
 import { Outlet } from "react-router-dom";
 import { API_URL } from "../../helpers/config";
 import { validateText } from "../../helpers/validations";
+import axios from "axios";
 
 export default function EditRecord({
   record,
@@ -18,21 +19,21 @@ export default function EditRecord({
   const [imageFile, setImageFile] = useState(null);
   const [validate, setValidate] = useState();
   const [categoryError, setCategoryError] = useState(" ");
-  const [parent, setParent] = useState(editedData.parent_id);
   const [selectedImage, setSelectedImage] = useState(null);
 
+
   useEffect(() => {
-    // Make an API request to fetch data
-    fetch(`${API_URL}/parent-category`)
-      .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []);
-  useEffect(() => {
-    if (editedData.parent_category) {
-      setParent(editedData.parent_category);
-    }
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/parent-category`);
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
   }, [editedData.parent_category]);
+
   // function to handle changes in input
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,15 +45,13 @@ export default function EditRecord({
     setSelectedImage(URL.createObjectURL(selectedFile));
     setImageFile(selectedFile);
   };
-  console.log(editedData);
   //function to handle the form
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(editedData);
     validateText(editedData.category_name, setCategoryError, setValidate);
     if (validate === true) {
       const formData = new FormData();
-      formData.append("id", categoryId); // Assuming editedData contains the ID
+      formData.append("id", categoryId);
       formData.append("category_name", editedData.category_name);
       formData.append("parent_category", editedData.parent_id);
       formData.append("status", editedData.status);
@@ -61,16 +60,11 @@ export default function EditRecord({
         formData.append("image", imageFile);
       }
 
-      // Makes API request to send the form data to your server
-      fetch(`${API_URL}/edit-category`, {
-        method: "PUT", // Use the correct method for updating data
-        body: formData,
-      })
-        .then((response) => response.json())
+      axios
+        .put(`${API_URL}/edit-category`, formData)
         .then((response) => {
-          // Handle the API response as needed
-          console.log("API Response:", response);
-          if (response.success) {
+          console.log("API Response:", response.data);
+          if (response.data.success) {
             onSave(editedData);
             getCategory();
           }

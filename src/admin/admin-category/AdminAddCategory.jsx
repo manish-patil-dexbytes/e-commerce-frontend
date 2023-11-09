@@ -6,7 +6,6 @@ import NavigationBar from "../components/AdminSideNavBar";
 import TopNavbar from "../components/AdminTopNavBar";
 import { API_URL } from "../../helpers/config";
 import {
-  validateImageInput,
   validateCategoryInput,
   validateDescriptiionInput,
 } from "../../helpers/validations";
@@ -17,22 +16,17 @@ function AddCategory() {
   const [category, setCategory] = useState("");
   const [parent, setParent] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState(1);
   const [image, setImage] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   //=====================================================
-  // State variables for form eroors
+  // State variables for form errors
   const [categoryError, setCategoryError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
-  const [imageError, setImageError] = useState("");
   const [CategoryValidate, setCategoryValidate] = useState("");
   const [DescriptionValidate, setDescriptionValidate] = useState("");
-  const [ImageValidate, setImageValidate] = useState("");
   // State variables for success/error messages and navigation
   const [message, setMessage] = useState("");
-  const [messageColor, setMessageColor] = useState("");
   // State variables for dropdown selection and data fetching
-  const [selectedItem, setSelectedItem] = useState("");
   const [data, setData] = useState([]);
   const navigate = useNavigate();
   //===================================================
@@ -58,7 +52,7 @@ function AddCategory() {
     }
   };
   // Event handlers for input fields
-  const handleCat = (e) => {
+  const handleCategory = (e) => {
     setCategory(e.target.value);
   };
   const handleParent = (e) => {
@@ -71,7 +65,7 @@ function AddCategory() {
     setImage(e.target.files[0]);
   };
   // Function to handle form submission
-  const handleCance = () => {
+  const handleCancel = () => {
     navigate("/admin/category");
   };
   //=========================================================
@@ -81,35 +75,35 @@ function AddCategory() {
     validateCategoryInput(category, setCategoryError, setCategoryValidate);
     validateDescriptiionInput( description,setDescriptionError,setDescriptionValidate);
     // validateImageInput(image, setImageError, setImageValidate);
-    if (
-      CategoryValidate === true &&
-      DescriptionValidate === true
-  
-    ) {
-      var formData = new FormData();
-      formData.append("category_name", category);
-      formData.append("parent_category", parent);
-      formData.append("description", description);
-      formData.append("status", status);
-      formData.append("image", image);
-
+    if ( CategoryValidate === true && DescriptionValidate === true ) 
+    {
       try {
+        var formData = new FormData();
+        formData.append("category_name", category);
+        formData.append("parent_category", parent);
+        formData.append("description", description);
+        formData.append("status", 1);
+        formData.append("image", image);
         await axios.post(`${API_URL}/add-category`, formData); //API to add category
-        navigate("/admin/category");
+        navigate(-1);
       } catch (error) {
         console.error(error);
         handleErrorToast();
       }
-    }
+    } 
   };
-
   useEffect(() => {
-    fetch(`${API_URL}/parent-category`)
-      .then((response) => response.json())
-      .then((data) => setData(data))
-      .catch((error) => console.error("Error fetching data:", error));
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/parent-category`);
+        setData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
   }, []);
-
+ 
   return (
     <>
       {showToast && (
@@ -122,7 +116,6 @@ function AddCategory() {
           />
         </div>
       )}
-
       <div className="container-fluid" style={{ textAlign: "left" }}>
         <div className="row">
           <nav className="col-md-2 bg-light sidebar">
@@ -143,7 +136,7 @@ function AddCategory() {
                       name="category"
                       id="category-form-input-field"
                       className="form-control mb-1 mr-sm-2 "
-                      onChange={handleCat}
+                      onChange={handleCategory}
                       placeholder="Category Name"
                     />
                     {categoryError && (
@@ -197,9 +190,7 @@ function AddCategory() {
                         handleImagePreview(e);
                       }}
                     />
-                    {imageError && (
-                      <div className="error-message">{imageError}</div>
-                    )}
+                   
                     <div className="col-md-5 images">
                       {imagePreview && (
                         <div className="image-preview">
@@ -221,14 +212,11 @@ function AddCategory() {
                   >
                     Submit
                   </button>
-                  <button className="button-cancel-cat" onClick={handleCance}>
+                  <button className="button-cancel-cat" onClick={handleCancel}>
                     Cancel
                   </button>
                 </div>
               </form>
-              {message && (
-                <p className={`message ${messageColor}`}>{message}</p>
-              )}
             </div>
           </main>
         </div>

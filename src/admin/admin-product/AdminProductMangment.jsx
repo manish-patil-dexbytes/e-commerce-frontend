@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import axios from "axios";
 import { Button } from "react-bootstrap";
 import { Link, Outlet } from "react-router-dom";
 import NavigationBar from "../components/AdminSideNavBar";
@@ -10,6 +9,8 @@ import EditProduct from "./AdminEditProduct";
 import "../../styles/Admin.css";
 import { DeleteSvg, EditSvg } from "../components/SVG";
 import ToastComponent from "../components/Toast";
+import axios from "axios";
+import { deleteProduct, updateProductStatus } from "../../helpers/api/product.Api";
 
 export default function ProductManagment() {
   const [product, setProduct] = useState([]);
@@ -18,15 +19,15 @@ export default function ProductManagment() {
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [showToast, SetShowToast] = useState(false);
   const [message, setMessage] = useState("");
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const getProduct = async (filter = "") => {
     try {
       const response = await axios.get(`${API_URL}/get-products`);
-      const filteredData = response.data.filter((item) =>
-        item.product_name.toLowerCase().includes(filter.toLowerCase()) ||
-        (item.category_name && item.category_name.toLowerCase().includes(filter.toLowerCase()))
+      const filteredData = response.data.filter(
+        (item) =>
+          item.product_name.toLowerCase().includes(filter.toLowerCase()) ||
+          (item.category_name &&
+            item.category_name.toLowerCase().includes(filter.toLowerCase()))
       );
       setProduct(filteredData);
     } catch (error) {
@@ -38,35 +39,35 @@ export default function ProductManagment() {
     getProduct();
   }, []);
 
-  useEffect(() => {
-    getProduct();
-  }, []);
-
   const handleDeleteProduct = async (id) => {
     try {
-      const response = await axios.delete(`${API_URL}/deleteProduct/${id}`);
-      if (response.data.success) {
-        getProduct(); // to update the list after deletion
+      const success = await deleteProduct(id);
+      if (success) {
+        const updatedProduct = product.filter((item) => item.product_id !== id);
+        setProduct(updatedProduct);
       }
     } catch (error) {
       console.error("Error deleting product:", error);
     }
   };
-  //==================================================
 
-  useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response = await axios.get(`${API_URL}/categories`);
-        setCategories(response.data);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
+  const handleStatusChange = async (row) => {
+    const updatedStatus = row.status === 1 ? 0 : 1; // Toggle status between 0 and 1
+    try {
+      const success = await updateProductStatus(row.product_id, updatedStatus);
+      if (success) {
+        const updatedProduct = product.map((item) =>
+          item.product_id === row.product_id
+            ? { ...item, status: updatedStatus }
+            : item
+        );
+        setProduct(updatedProduct);
       }
+    } catch (error) {
+      console.error("Error updating record:", error);
     }
-
-    fetchCategories();
-  }, []);
-  //==========================================================
+  };
+  //==================================================
 
   const handleToastClose = () => SetShowToast(false);
   const handleErrorToast = () => {
@@ -143,30 +144,9 @@ export default function ProductManagment() {
     try {
       await getProduct();
       handleErrorToast();
+      setIsEditing(false);
     } catch (error) {
       console.error(error);
-    }
-    setIsEditing(false);
-  };
-  //======================================
-  const handleStatusChange = async (row) => {
-    const updatedStatus = row.status === 1 ? 0 : 1; // Toggle status between 0 and 1
-    try {
-      const response = await axios.put(
-        `${API_URL}/product-status/status/${row.product_id}`,
-        {
-          status: updatedStatus,
-        }
-      );
-      // Check the response before calling getProduct
-      if (
-        response.data &&
-        response.data.message === "Record updated successfully"
-      ) {
-        await getProduct();
-      }
-    } catch (error) {
-      console.error("Error updating record:", error);
     }
   };
   //======================================
@@ -187,9 +167,9 @@ export default function ProductManagment() {
         <div className="edit-record-container">
           <EditProduct
             record={selectedRecord}
-            onSave={handleSaveEdit} 
+            onSave={handleSaveEdit}
             onCancel={() => {
-              setSelectedRecord(null); 
+              setSelectedRecord(null);
               setIsEditing(false);
             }}
             categoryId={selectedId}

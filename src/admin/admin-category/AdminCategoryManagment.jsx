@@ -9,7 +9,8 @@ import TopNavbar from "../components/AdminTopNavBar";
 import "../../styles/Admin.css";
 import { API_URL } from "../../helpers/config";
 import ToastComponent from "../components/Toast";
-import { viewSvg, EditSvg, ViewSvg } from "../components/SVG";
+import { EditSvg, ViewSvg } from "../components/SVG";
+import { updateCategoryStatus } from "../../helpers/api/category.Api";
 
 export default function AdminCatMangment() {
   const [category, setCategory] = useState([]); // State for  category name
@@ -29,7 +30,7 @@ export default function AdminCatMangment() {
   };
 
   //========================================================
-  const getCategory = async (filter ="") => {
+  const getCategory = async (filter = "") => {
     try {
       const response = await axios.get(`${API_URL}/get-categories`);
       const filteredData = response.data.filter((item) =>
@@ -42,8 +43,6 @@ export default function AdminCatMangment() {
   };
   useEffect(() => {
     getCategory();
-    // showToastMessage();
-    // showToastMessage("Category added successfully!");
   }, []);
   //parsing data to data table
   const columns = [
@@ -85,7 +84,6 @@ export default function AdminCatMangment() {
         <div>
           <button
             onClick={() => {
-              getCategory();
               handleView(row);
             }}
             style={{ border: "none" }}
@@ -125,7 +123,7 @@ export default function AdminCatMangment() {
   };
 
   useEffect(() => {
-    if (showViewModal) {
+    if (showViewModal && selectedId) {
       viewCategoryData(selectedId);
     }
   }, [showViewModal]);
@@ -138,30 +136,23 @@ export default function AdminCatMangment() {
       console.error("API request error:", error);
     }
   };
-
   //============================
 
   const handleStatusChange = async (row) => {
-    const updatedStatus = row.status === 1 ? 0 : 1; // Toggle status between 0 and 1
+    const updatedStatus = row.status === 1 ? 0 : 1;
     try {
-      // Ensure you send a non-null value for category_name
-      const response = await axios.put(
-        `${API_URL}/categories-status/status/${row.id}`,
-        {
-          status: updatedStatus,
-        }
-      );
-      // Check the response before calling getCategory
-      if (
-        response.data &&
-        response.data.message === "Record updated successfully"
-      ) {
-        getCategory();
+      const isUpdated = await updateCategoryStatus(row.id, updatedStatus);
+      if (isUpdated) {
+        const updatedCategory = category.map((item) =>
+          item.id === row.id ? { ...item, status: updatedStatus } : item
+        );
+        setCategory(updatedCategory);
       }
     } catch (error) {
       console.error("Error saving record:", error);
     }
   };
+
   const handleToastClose = () => setShowToast(false);
   return (
     <>
@@ -273,7 +264,7 @@ export default function AdminCatMangment() {
 
             {/* Main Content */}
             <main className="col-md-10 ">
-              <TopNavbar  handleFilter={getCategory}/>
+              <TopNavbar handleFilter={getCategory} />
               <p className="page-heading">Category</p>
               <div className="col-md-11 table-css">
                 <Link to="/admin/category/add-category">
