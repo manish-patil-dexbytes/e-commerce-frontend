@@ -9,7 +9,7 @@ import axios from "axios";
 export default function EditVariant({ record, onCancel, onSave }) {
   const [editedData, setEditedData] = useState({ ...record });
   const [attributes, setAttributes] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
+ 
   
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function EditVariant({ record, onCancel, onSave }) {
   }, [editedData]);
 
   const handleInputChange = (e, index) => {
-    const { name, value } = e.target;
+    const {  value } = e.target;
     const updatedAttributes = [...attributes];
     updatedAttributes[index] = value;
     setAttributes(updatedAttributes);
@@ -40,12 +40,12 @@ const handleAddAttribute = () => {
   };
   const onSubmit = async () => {
     try {
-      const response = await axios.put(`${API_URL}/update-variant`, editedData);
+      await axios.put(`${API_URL}/update-variant`, editedData);
       onSave()
     } catch (error) {
       console.error("Error updating variant:", error);
     }
-    console.log(errorMessage);
+    
   };
 
   return (

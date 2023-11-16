@@ -7,7 +7,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate, Link, Outlet } from "react-router-dom";
 import NavigationBar from "../components/AdminSideNavBar";
 import TopNavbar from "../components/AdminTopNavBar";
-import { API_URL } from "../../helpers/config";
 import ProductPreview from "./AdminPreviewProduct";
 import TreeSelect from "rc-tree-select";
 import {
@@ -19,7 +18,7 @@ import {
   ValidateMedia,
 } from "../../helpers/validations";
 import ToastComponent from "../components/Toast";
-import { addProduct, getCategories } from "../../helpers/api/product.Api"
+import { addProduct, getCategories } from "../../helpers/api/product.Api";
 
 export default function AddProduct() {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -59,7 +58,6 @@ export default function AddProduct() {
   const [validateMedia, setValidateMedia] = useState(false);
   const navigate = useNavigate();
   //=======================================================
-  // all the api handles
   // API to get all the category and sub category
   useEffect(() => {
     const fetchData = async () => {
@@ -98,41 +96,40 @@ export default function AddProduct() {
       setValidateQuantity
     );
     ValidateMedia(mediaFiles, setMediaError, setValidateMedia);
-    if (
-      validateProduct === true &&
-      validateSku === true &&
-      validatePrice === true &&
-      validateDiscount === true &&
-      validateQuantity === true &&
-      validateCategory === true &&
-      validateMedia === true
-    ) {
-      //appending form data into an formData variable
-      var formData = new FormData();
-      formData.append("product_name", product_name);
-      formData.append("category_name", selectedCategory);
-      formData.append("price", price);
-      formData.append("discounted_price", discount);
-      formData.append("quantity", quantity);
-      formData.append("SKU", sku);
-      formData.append("launch_date", launchDate);
-      formData.append("description", description);
-      formData.append("status", published);
+    try {
+      if (
+        validateProduct === true &&
+        validateSku === true &&
+        validatePrice === true &&
+        validateDiscount === true &&
+        validateQuantity === true &&
+        validateCategory === true &&
+        validateMedia === true
+      ) {
+        //appending form data into an formData variable
+        var formData = new FormData();
+        formData.append("product_name", product_name);
+        formData.append("category_name", selectedCategory);
+        formData.append("price", price);
+        formData.append("discounted_price", discount);
+        formData.append("quantity", quantity);
+        formData.append("SKU", sku);
+        formData.append("launch_date", launchDate);
+        formData.append("description", description);
+        formData.append("status", published);
 
-      // loop to iterate the  images  stored in a variable  and append it to our  formData variable as an array of images
-      for (let i = 0; i < mediaFiles.length; i++) {
-        formData.append("images", mediaFiles[i]);
-      }
-      try {
+        // loop to iterate the  images  stored in a variable  and append it to our  formData variable as an array of images
+        for (let i = 0; i < mediaFiles.length; i++) {
+          formData.append("images", mediaFiles[i]);
+        }
         const response = await addProduct(formData);
         navigate(-1);
-      } catch (error) {
-        console.error("Error uploading product:", error);
-        handleErrorToast();
       }
+    } catch (error) {
+      console.error("Error uploading product:", error);
+      handleErrorToast();
     }
   };
-
   //========================================================
   //handle for toast
   const handleToastClose = () => SetShowToast(false);
@@ -244,7 +241,6 @@ export default function AddProduct() {
     };
     reader.readAsDataURL(image);
   };
-
   //function to remove selected image
   const removeImage = (index) => {
     const updatedImages = [...selectedImages];
@@ -266,9 +262,8 @@ export default function AddProduct() {
   //=========================================
   //on cancel handler
   const onCancel = (e) => {
-    navigate("/admin/product");
+    navigate(-1);
   };
-
   //==========================================
   return (
     <>
@@ -296,7 +291,6 @@ export default function AddProduct() {
           description={description}
         />
       )}
-
       <div className="container-fluid">
         {/*  layout components */}
         <div className="row">
@@ -324,7 +318,6 @@ export default function AddProduct() {
                 </Link>
               </div>
             </div>
-
             <form
               encType="multipart/FormData"
               method="post"
@@ -451,7 +444,6 @@ export default function AddProduct() {
                       onChange={handleDateChange}
                       className="date"
                       minDate={new Date()}
-                      // Set the startDate prop to dbDate
                     />
                   </div>
                 </div>
@@ -536,7 +528,6 @@ export default function AddProduct() {
                             src={URL.createObjectURL(video)}
                             type={video.type}
                           />
-                          Your browser does not support the video tag.
                         </video>
                       </div>
                     ))}

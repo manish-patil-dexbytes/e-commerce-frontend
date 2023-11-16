@@ -28,7 +28,6 @@ export default function AdminCatMangment() {
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000); // Close the toast after 3 seconds
   };
-
   //========================================================
   const getCategory = async (filter = "") => {
     try {
@@ -121,7 +120,6 @@ export default function AdminCatMangment() {
   const handleCloseViewModal = () => {
     setShowViewModal(false);
   };
-
   useEffect(() => {
     if (showViewModal && selectedId) {
       viewCategoryData(selectedId);
@@ -136,8 +134,7 @@ export default function AdminCatMangment() {
       console.error("API request error:", error);
     }
   };
-  //============================
-
+  //======================================================
   const handleStatusChange = async (row) => {
     const updatedStatus = row.status === 1 ? 0 : 1;
     try {
@@ -261,7 +258,6 @@ export default function AdminCatMangment() {
                 <NavigationBar />
               </div>
             </nav>
-
             {/* Main Content */}
             <main className="col-md-10 ">
               <TopNavbar handleFilter={getCategory} />
@@ -275,7 +271,7 @@ export default function AdminCatMangment() {
                       borderColor: "#e3974b",
                       transition: "background-color 0.1s",
                     }}
-                    className="mt-2 mb-2 add-btn "
+                    className="mt-2 mb-2 add-btn"
                   >
                     Add
                   </Button>

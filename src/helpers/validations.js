@@ -1,3 +1,4 @@
+//validation for validating empty text
 const validateText = (text, setEmptyError, setValidate) => {
   if (!text) {
     setEmptyError("*Field Cannot empty");
@@ -5,11 +6,12 @@ const validateText = (text, setEmptyError, setValidate) => {
     setTimeout(() => {
       setEmptyError("");
     }, 3000);
-    return
+    return;
   } else {
     setValidate(true);
   }
 };
+//validation to validate category
 const validateCategoryInput = (text, setEmptyError, setValidate) => {
   if (!text) {
     setEmptyError("*Please enter category name");
@@ -17,11 +19,12 @@ const validateCategoryInput = (text, setEmptyError, setValidate) => {
     setTimeout(() => {
       setEmptyError("");
     }, 3000);
-    return
+    return;
   } else {
     setValidate(true);
   }
 };
+//validation to validate description
 const validateDescriptiionInput = (text, setEmptyError, setValidate) => {
   if (!text) {
     setEmptyError("*Please Enter description");
@@ -29,11 +32,12 @@ const validateDescriptiionInput = (text, setEmptyError, setValidate) => {
     setTimeout(() => {
       setEmptyError("");
     }, 3000);
-    return
+    return;
   } else {
     setValidate(true);
   }
 };
+//validation to validate the image
 const validateImageInput = (text, setEmptyError, setValidate) => {
   if (!text) {
     setEmptyError("*Please Select Image");
@@ -41,20 +45,7 @@ const validateImageInput = (text, setEmptyError, setValidate) => {
     setTimeout(() => {
       setEmptyError("");
     }, 3000);
-    return
-  } else {
-    setValidate(true);
-  }
-};
-const validateCategory = (category, setCategoryError, setValidate) => {
-  if (!category) {
-    setCategoryError("*Select category");
-    setValidate(false);
-  
-    setTimeout(() => {
-      setCategoryError("");
-    }, 3000);
-    return
+    return;
   } else {
     setValidate(true);
   }
@@ -68,7 +59,7 @@ const validateNumber = (number, setNumberError, setValidate) => {
     setTimeout(() => {
       setNumberError("");
     }, 3000);
-    return
+    return;
   } else {
     setValidate(true);
   }
@@ -81,7 +72,7 @@ const validatPriceDiscount = (price, discount, setError, setValidate) => {
     setTimeout(() => {
       setError("");
     }, 3000);
-    return
+    return;
   } else {
     setValidate(true);
   }
@@ -94,7 +85,7 @@ const validateQuantityNotLessThanZero = (quantity, setError, setValidate) => {
     setTimeout(() => {
       setError("");
     }, 3000);
-    return
+    return;
   } else {
     setValidate(true);
   }
@@ -108,7 +99,7 @@ const validateAlphaNumeric = (value, setError, setValidate) => {
     setTimeout(() => {
       setError("");
     }, 3000);
-    return
+    return;
   } else {
     setValidate(true);
   }
@@ -123,7 +114,7 @@ const validatePassword = (password, setError, setValidate) => {
     setTimeout(() => {
       setError("");
     }, 3000);
-    return
+    return;
   } else {
     setValidate(true);
   }
@@ -136,38 +127,38 @@ const validateEmail = (email, setError, setValidate) => {
     setTimeout(() => {
       setError("");
     }, 3000);
-    return
+    return;
   } else {
     setValidate(true);
   }
 };
- const ValidateMedia =(media ,setError,setValidate)=>{
-  if(media.length > 5){
-    setError("You can select a maximum of five media.")
-  setValidate(false)
-  setTimeout(() => {
-    setError("");
-  }, 3000);
-  return
-  }else{
-    setValidate(true);
-  }
- };
-
-const validateVariantName =(text,setError,setValidate)=>{
-  if(!text){
-    setError("Enter Variant Name")
-    setValidate(false)
-    setTimeout(()=>{
+const ValidateMedia = (media, setError, setValidate) => {
+  if (media.length > 5) {
+    setError("You can select a maximum of five media.");
+    setValidate(false);
+    setTimeout(() => {
       setError("");
-    },3000);
-    return
-  }else{
+    }, 3000);
+    return;
+  } else {
     setValidate(true);
   }
 };
 
- const validateVariantAttribute = (attribute, setError, setValidate) => {
+const validateVariantName = (text, setError, setValidate) => {
+  if (!text) {
+    setError("Enter Variant Name");
+    setValidate(false);
+    setTimeout(() => {
+      setError("");
+    }, 3000);
+    return;
+  } else {
+    setValidate(true);
+  }
+};
+
+const validateVariantAttribute = (attribute, setError, setValidate) => {
   if (!Array.isArray(attribute) || attribute.length === 0) {
     setError("Please enter at least one attribute");
     setValidate(false);
@@ -180,8 +171,7 @@ const validateVariantName =(text,setError,setValidate)=>{
   }
 };
 const validateAttributeNotEmpty = (attribute, setError, setValidate) => {
-  console.log(attribute)
-  if (attribute=='') {
+  if (!attribute) {
     setError("Enter attribute name");
     setValidate(false);
     setTimeout(() => {
@@ -192,10 +182,20 @@ const validateAttributeNotEmpty = (attribute, setError, setValidate) => {
     setValidate(true);
   }
 };
+// const validateCategory = (category, setError, setValidate) => {
+//   if (!category) {
+//     setError("Please select category");
+//     setValidate(false);
+//     setTimeout(() => {
+//       setError("");
+//     }, 3000);
+//     return;
+//   }
+//   setValidate(true);
+// };
 
 export {
   validateText,
-  validateCategory,
   validateNumber,
   validatPriceDiscount,
   validateQuantityNotLessThanZero,

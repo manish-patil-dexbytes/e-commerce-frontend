@@ -15,7 +15,7 @@ import {
   validateAlphaNumeric,
   ValidateMedia,
 } from "../../helpers/validations";
-import { getCategories ,editProduct } from "../../helpers/api/product.Api"
+import { getCategories, editProduct } from "../../helpers/api/product.Api";
 
 export default function EditProduct({ record, onCancel, onSave }) {
   const [editedData, setEditedData] = useState({ ...record });
@@ -32,8 +32,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
   const [QuantityError, setQuantityError] = useState("");
   const [SKUError, setSKUError] = useState("");
   const [mediaError, setMediaError] = useState("");
-  const [showToast, SetShowToast] = useState(false);
-  const [message, setMessage] = useState("");
   const [treeData, setTreeData] = useState([]);
   const [validateProduct, setValidateProduct] = useState(false);
   const [validateSku, setValidateSku] = useState(false);
@@ -145,28 +143,14 @@ export default function EditProduct({ record, onCancel, onSave }) {
       }
 
       try {
-        const response = await editProduct(formData);
+        await editProduct(formData);
         onSave();
       } catch (error) {
         console.error("Error:", error);
       }
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getCategories();
-       
-        const formattedData = buildTree(data);
-        setTreeData(formattedData);
-        convertToDate();
-      } catch (error) {
-        console.error("Error fetching data from the server:", error);
-      }
-    };
-    fetchData();
-  }, []);
-  //=============================================
+  //==============================================
   //function to tree structure of category and sub category
   const buildTree = (categories, parent_id = null) => {
     let tree = [];
@@ -197,7 +181,22 @@ export default function EditProduct({ record, onCancel, onSave }) {
     }
   };
 
-  //============================================
+  //==============================================
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getCategories();
+        const formattedData = buildTree(data);
+        setTreeData(formattedData);
+        convertToDate();
+      } catch (error) {
+        console.error("Error fetching data from the server:", error);
+      }
+    };
+    fetchData();
+  }, []);
+  //=============================================
+
   return (
     <div className="container-fluid">
       <div className="row">
@@ -253,12 +252,10 @@ export default function EditProduct({ record, onCancel, onSave }) {
                     switcherIcon
                   />
                 </div>
-
                 {categoryError && (
                   <div className="error-message">{categoryError}</div>
                 )}
               </div>
-
               <div className="col-md-4">
                 <label htmlFor="price">Price Per Unit</label>
                 <input
@@ -376,7 +373,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                     >
                       <img
                         src={URL.createObjectURL(image)}
-                        alt={`Image ${index}`}
+                        alt={`productc Image ${index}`}
                         id="selected-product-img"
                       />
                     </div>
@@ -399,6 +396,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                     src={
                       "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
                     }
+                    alt=""
                     className="selected-edit-image"
                     style={{
                       marginLeft: "10px",
@@ -407,6 +405,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                   />
                 )}
               </div>
+              {mediaError && <div className="error-message">{mediaError}</div>}
             </div>
             <div className="row mt-3">
               <div id="produc-submit-cancel-btn">

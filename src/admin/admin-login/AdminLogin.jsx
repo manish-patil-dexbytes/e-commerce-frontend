@@ -61,8 +61,7 @@ export default function AdminLogin() {
       } catch (error) {
         console.error("Error:", error);
       }
-    }
-
+    }  
     //=================================================================
   };
   // if login is success then we will redirected to admin dashboard
@@ -114,6 +113,7 @@ export default function AdminLogin() {
               </button>
             </div>
           </form>
+         
         </div>
       </div>
       <Outlet />
