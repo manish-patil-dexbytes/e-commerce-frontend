@@ -45,7 +45,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
     const { name, value } = e.target;
     setEditedData({ ...editedData, [name]: value });
   };
-
   const convertToDate = () => {
     const dateParts = record.lauch_date.split("/");
     const validDate = new Date(
@@ -53,7 +52,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
     );
     setDbdate(validDate);
   };
-
   //======================
   const handleCategoryChange = (selectedNodes) => {
     setEditedData({
@@ -62,7 +60,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
     });
   };
   //==========================
-
   const onSelectFile = (e) => {
     const files = e.target.files;
     const selectedImages = Array.from(files);
@@ -72,7 +69,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
     setLaunchDate(selectedDate);
     setDbdate(selectedDate); // Update the dbDate with the selected date
   };
-
   //function to handle image preview
   const previewImage = (image) => {
     const reader = new FileReader();
@@ -83,10 +79,8 @@ export default function EditProduct({ record, onCancel, onSave }) {
     };
     reader.readAsDataURL(image); //creating an URL for image src in preview div
   };
-
   const onSubmit = async (e) => {
     e.preventDefault();
-
     validateText(editedData.product_name, setProductError, setValidateProduct);
     validateText(editedData.category_id, setCategoryError, setValidateCategory);
     validateAlphaNumeric(editedData.sku, setSKUError, setValidateSku);
@@ -136,12 +130,10 @@ export default function EditProduct({ record, onCancel, onSave }) {
       formData.append("SKU", editedData.sku);
       formData.append("launch_date", launchDate);
       formData.append("description", editedData.description);
-
       // Append each selected image individually
       for (let i = 0; i < selectedImages.length; i++) {
         formData.append("media", selectedImages[i]); // Append each image individually
       }
-
       try {
         await editProduct(formData);
         onSave();
@@ -155,7 +147,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
   const buildTree = (categories, parent_id = null) => {
     let tree = [];
     let subTree = [];
-
     categories
       .filter((category) => category.parent_id === parent_id)
       .forEach((category) => {
@@ -173,14 +164,12 @@ export default function EditProduct({ record, onCancel, onSave }) {
           subTree.push(node); // Push to subcategory tree
         }
       });
-
     if (parent_id === null) {
       return tree; // Return the main category tree
     } else {
       return subTree; // Return the subcategory tree
     }
   };
-
   //==============================================
   useEffect(() => {
     const fetchData = async () => {
@@ -196,7 +185,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
     fetchData();
   }, []);
   //=============================================
-
   return (
     <div className="container-fluid">
       <div className="row">
@@ -208,7 +196,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
         </nav>
         {/* Main Content */}
         <main className="col-md-10 ">
-          <TopNavbar />
+          <TopNavbar showSearchBar={false} />
           <p className="page-heading">Edit Product</p>
           <form encType="multipart/FormData" className="col-md-11">
             <div className="row">
@@ -280,7 +268,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                   className="form-control mb-1 mr-sm-2"
                   value={editedData.discounted_price}
                   onChange={handleInputChange}
-                  placeholder=" Discounted Price"
+                  placeholder="Discounted Price"
                 />
                 {discountError && (
                   <div className="error-message">{discountError}</div>
@@ -311,7 +299,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                   name="sku"
                   className="form-control mb-1 mr-sm-2"
                   value={editedData.sku}
-                  placeholder="Enter SKU "
+                  placeholder="Enter SKU"
                   onChange={handleInputChange}
                 />
                 {SKUError && <div className="error-message">{SKUError}</div>}

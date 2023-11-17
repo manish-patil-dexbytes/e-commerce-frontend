@@ -93,7 +93,7 @@ export default function EditRecord({
         </nav>
         {/* Main Content */}
         <main className="col-md-10 ">
-          <TopNavbar />
+          <TopNavbar showSearchBar={false}/>
           <p className="page-heading">Edit data</p>
           <div>
             <div className=" form-flex row">
@@ -176,7 +176,7 @@ export default function EditRecord({
                 </div>
               </div>
 
-              <div className="row mt-2 col-md-10">
+              <div className="row mt-2 col-md-10 " style={{marginLeft:"-45px"}}>
                 <div className="col-md-2">
                   <button
                     type="button"

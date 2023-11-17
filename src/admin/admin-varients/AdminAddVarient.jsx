@@ -4,9 +4,11 @@ import axios from "axios";
 import NavigationBar from "../components/AdminSideNavBar";
 import TopNavbar from "../components/AdminTopNavBar";
 import { API_URL } from "../../helpers/config";
-import { validateVariantName, validateVariantAttribute, } from "../../helpers/validations";
+import {
+  validateVariantName,
+  validateVariantAttribute,
+} from "../../helpers/validations";
 import ToastComponent from "../components/Toast";
-
 export default function AddProductVarient() {
   const [varientName, setVarientName] = useState("");
   const [inputFields, setInputFields] = useState([]);
@@ -17,7 +19,6 @@ export default function AddProductVarient() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const navigate = useNavigate();
-
   const handleVarient = (e) => {
     setVarientName(e.target.value);
   };
@@ -30,32 +31,30 @@ export default function AddProductVarient() {
     });
     setInputFields(updatedFields);
   };
-
   const showToastMessage = (message) => {
     setToastMessage(message);
     setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000); // Close the toast after 3 seconds
+    setTimeout(() => setShowToast(false),3000); // Close the toast after 3 seconds
   };
-
   const addInputField = () => {
     setInputFields([...inputFields, { id: inputFields.length, value: "" }]);
   };
-
   const removeInputField = (id) => {
     const updatedFields = inputFields.filter((field) => field.id !== id);
     setInputFields(updatedFields);
   };
   const handleToastClose = () => setShowToast(false);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (inputFields.some((field) => !field.value.trim())) {
       showToastMessage("Enter attribute name");
     }
     validateVariantName(varientName, setVariantNameError, setValidateVariant);
-    validateVariantAttribute(inputFields, setAttributeError, setValidateAttribute);
-   
-
+    validateVariantAttribute(
+      inputFields,
+      setAttributeError,
+      setValidateAttribute
+    );
     if (validateVariant === true && validateAttribute === true) {
       const attributes = inputFields
         .map((field) => field.value)
@@ -70,7 +69,7 @@ export default function AddProductVarient() {
           navigate(-1);
         } catch (error) {
           console.error("Error in adding Variant", error);
-          showToastMessage("Variant already exist")
+          showToastMessage("Variant already exist");
         }
       }
     }
@@ -98,11 +97,13 @@ export default function AddProductVarient() {
               <NavigationBar />
             </div>
           </nav>
-
           <main className="col-md-10 " style={{ textAlign: "left" }}>
-            <TopNavbar />
+            <TopNavbar showSearchBar={false} />
             <p className="page-heading ">Variants</p>
-            <form onSubmit={(e) => e.preventDefault()} className="col-md-12  row">
+            <form
+              onSubmit={(e) => e.preventDefault()}
+              className="col-md-12  row"
+            >
               <div className="row">
                 <div className="col-md-4 mb-4">
                   <label htmlFor="varientName">Varient Name*</label>
@@ -114,8 +115,12 @@ export default function AddProductVarient() {
                     onChange={handleVarient}
                     placeholder="Varient Name"
                   />
-                  {varianNameError && <div className="error-message">{varianNameError}</div>}
-                  {attributeError && <div className="error-message">{attributeError}</div>}
+                  {varianNameError && (
+                    <div className="error-message">{varianNameError}</div>
+                  )}
+                  {attributeError && (
+                    <div className="error-message">{attributeError}</div>
+                  )}
                 </div>
               </div>
               <div className="row col-md-12">
@@ -127,7 +132,9 @@ export default function AddProductVarient() {
                         name="text"
                         className="form-control"
                         placeholder="Attribute"
-                        onChange={(e) => handleInputChange(field.id, e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange(field.id, e.target.value)
+                        }
                       />
                       <button
                         type="button"
@@ -140,17 +147,29 @@ export default function AddProductVarient() {
                   </div>
                 ))}
               </div>
-
-              <button type="button" onClick={addInputField} className="col-md-1 button-add-cat">
-                Add +
-              </button>
-              <button type="button" onClick={handleSubmit} className="col-md-1 button-add-cat">
-                Save
-              </button>
-
-              <button type="button" className="col-md-1 button-cancel-cat" onClick={onCancel}>
-                Cancel
-              </button>
+              <div style={{ marginLeft: "-30px" }}>
+                <button
+                  type="button"
+                  onClick={addInputField}
+                  className="col-md-1 button-add-cat"
+                >
+                  Add +
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="col-md-1 button-add-cat"
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  className="col-md-1 button-cancel-cat"
+                  onClick={onCancel}
+                >
+                  Cancel
+                </button>
+              </div>
             </form>
           </main>
         </div>

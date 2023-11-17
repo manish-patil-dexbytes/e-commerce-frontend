@@ -10,7 +10,6 @@ import {
   validateDescriptiionInput,
 } from "../../helpers/validations";
 import ToastComponent from "../components/Toast";
-
 function AddCategory() {
   // State variables for form inputs
   const [category, setCategory] = useState("");
@@ -73,10 +72,13 @@ function AddCategory() {
   const onSubmit = async (e) => {
     e.preventDefault();
     validateCategoryInput(category, setCategoryError, setCategoryValidate);
-    validateDescriptiionInput( description,setDescriptionError,setDescriptionValidate);
+    validateDescriptiionInput(
+      description,
+      setDescriptionError,
+      setDescriptionValidate
+    );
     // validateImageInput(image, setImageError, setImageValidate);
-    if ( CategoryValidate === true && DescriptionValidate === true ) 
-    {
+    if (CategoryValidate === true && DescriptionValidate === true) {
       try {
         var formData = new FormData();
         formData.append("category_name", category);
@@ -90,7 +92,7 @@ function AddCategory() {
         console.error(error);
         handleErrorToast();
       }
-    } 
+    }
   };
   useEffect(() => {
     const fetchData = async () => {
@@ -103,7 +105,7 @@ function AddCategory() {
     };
     fetchData();
   }, []);
- 
+
   return (
     <>
       {showToast && (
@@ -124,11 +126,11 @@ function AddCategory() {
             </div>
           </nav>
           <main className="col-md-10">
-            <TopNavbar />
-            <p className="page-heading">Add Data</p>
+            <TopNavbar showSearchBar={false} />
+            <p className="page-heading">Add Category</p>
             <div className="form-flex">
               <form method="post" encType="multipart/FormData">
-                <div className="row m-3">
+                <div className="row ">
                   <div className="col-md-5">
                     <label htmlFor="category_name">Category Name*</label>
                     <input
@@ -162,7 +164,7 @@ function AddCategory() {
                     </select>
                   </div>
                 </div>
-                <div className="row m-3">
+                <div className="row">
                   <div className="col-md-10">
                     <label>Description*</label>
                     <textarea
@@ -177,7 +179,7 @@ function AddCategory() {
                     )}
                   </div>
                 </div>
-                <div className="row mt-3" style={{ marginLeft: "19px" }}>
+                <div className="row">
                   <div className=" col-md-3">
                     <label for="image">Image Upload</label>
                     <input
@@ -190,7 +192,6 @@ function AddCategory() {
                         handleImagePreview(e);
                       }}
                     />
-                   
                     <div className="col-md-5 images">
                       {imagePreview && (
                         <div className="image-preview">

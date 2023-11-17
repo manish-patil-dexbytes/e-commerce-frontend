@@ -182,18 +182,6 @@ const validateAttributeNotEmpty = (attribute, setError, setValidate) => {
     setValidate(true);
   }
 };
-// const validateCategory = (category, setError, setValidate) => {
-//   if (!category) {
-//     setError("Please select category");
-//     setValidate(false);
-//     setTimeout(() => {
-//       setError("");
-//     }, 3000);
-//     return;
-//   }
-//   setValidate(true);
-// };
-
 export {
   validateText,
   validateNumber,

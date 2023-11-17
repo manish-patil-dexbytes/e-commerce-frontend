@@ -9,30 +9,24 @@ import axios from "axios";
 export default function EditVariant({ record, onCancel, onSave }) {
   const [editedData, setEditedData] = useState({ ...record });
   const [attributes, setAttributes] = useState([]);
- 
-  
-
   useEffect(() => {
     if (typeof editedData.attributes === "string") {
       setAttributes(editedData.attributes.split(","));
     }
   }, [editedData]);
-
   const handleInputChange = (e, index) => {
-    const {  value } = e.target;
+    const { value } = e.target;
     const updatedAttributes = [...attributes];
     updatedAttributes[index] = value;
     setAttributes(updatedAttributes);
     setEditedData({ ...editedData, attributes: updatedAttributes.join(",") });
   };
-
-const handleAddAttribute = () => {
-  const isDuplicate = attributes.some((attribute) => attribute === "");
-  if (!isDuplicate) {
-    setAttributes([...attributes, ""]);
-  }
-};
-
+  const handleAddAttribute = () => {
+    const isDuplicate = attributes.some((attribute) => attribute === "");
+    if (!isDuplicate) {
+      setAttributes([...attributes, ""]);
+    }
+  };
   const handleRemoveAttribute = (index) => {
     const updatedAttributes = attributes.filter((_, i) => i !== index);
     setAttributes(updatedAttributes);
@@ -41,13 +35,11 @@ const handleAddAttribute = () => {
   const onSubmit = async () => {
     try {
       await axios.put(`${API_URL}/update-variant`, editedData);
-      onSave()
+      onSave();
     } catch (error) {
       console.error("Error updating variant:", error);
     }
-    
   };
-
   return (
     <div className="container-fluid">
       <div className="row">
@@ -57,7 +49,7 @@ const handleAddAttribute = () => {
           </div>
         </nav>
         <main className="col-md-10 ">
-          <TopNavbar />
+          <TopNavbar showSearchBar={false} />
           <p className="page-heading">Edit Variant</p>
           <form encType="multipart/FormData" className="col-md-11"></form>
           <div className="row">
@@ -101,8 +93,7 @@ const handleAddAttribute = () => {
               </div>
             ))}
           </div>
-
-          <div className="row mt-2 col-md-10">
+          <div className="row mt-2 col-md-10" style={{ marginLeft: "-39px" }}>
             <div className="col-md-2">
               <button
                 type="button"

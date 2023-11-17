@@ -264,6 +264,7 @@ export default function AddProduct() {
   const onCancel = (e) => {
     navigate(-1);
   };
+  console.log(categoryName);
   //==========================================
   return (
     <>
@@ -300,7 +301,7 @@ export default function AddProduct() {
             </div>
           </nav>
           <main className="col-md-10 form-flex">
-            <TopNavbar />
+            <TopNavbar  showSearchBar={false} />
             <div className="row col-md-10">
               <div className="col-md-6">
                 <p className="page-heading">Add Product</p>
@@ -552,7 +553,7 @@ export default function AddProduct() {
           </main>
         </div>
       </div>
-      <Outlet />
+      <Outlet/>
     </>
   );
 }

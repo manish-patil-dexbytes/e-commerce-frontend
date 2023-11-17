@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
 import { BiBell } from "react-icons/bi";
 import "../../styles/Admin.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserIconSvg } from "./SVG";
 
-function TopNavbar({handleFilter}) {
+function TopNavbar({ handleFilter,showSearchBar = true }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -16,8 +16,8 @@ function TopNavbar({handleFilter}) {
 
   const handleSearchChange = (e) => {
     e.preventDefault();
-    const query =e.target.value;
-    setSearchQuery(query)
+    const query = e.target.value;
+    setSearchQuery(query);
     handleFilter(query);
   };
   const navigate = useNavigate();
@@ -30,9 +30,8 @@ function TopNavbar({handleFilter}) {
     <nav className="navbar navbar-expand-lg navbar-light  col-md-10 margin-top">
       <div className="container-md">
         {/* Search Bar */}
-        <form
-          className="d-flex mx-auto col-md-6 "
-        >
+        {showSearchBar &&(
+        <form className="d-flex mx-auto col-md-6 ">
           <input
             className="form-control me-2 "
             id="responsive-search"
@@ -43,25 +42,36 @@ function TopNavbar({handleFilter}) {
             onChange={handleSearchChange}
           />
 
-          <button  disabled className="btn " id="responsive-button" type="submit">
-            Search  
+          <button
+            disabled
+            className="btn "
+            id="responsive-button"
+            type="submit"
+          >
+            Search
           </button>
         </form>
+        )}
+        {!showSearchBar &&(
+          <div className="col-md-10">
+
+          </div>
+        )}
         {/* User Dropdown and Bell Icon */}
-        <a className="nav-link " id="bell" href="#">
+        <Link className="nav-link " id="bell" to="#">
           <BiBell style={{ fontSize: "20px" }} />
-        </a>
+        </Link>
         <div className="d-flex align-items-center  " id="margin-user-icon">
           <div className={`dropdown ${isDropdownOpen ? "show" : ""}`}>
-            <a
+            <Link
               className="nav-link dropdown-toggle"
-              href="#"
+              to="#"
               role="button"
               id="userDropdown"
               onClick={toggleDropdown}
             >
-              <UserIconSvg/>
-            </a>
+              <UserIconSvg />
+            </Link>
 
             <ul
               className={`dropdown-menu dropdown-menu-end ${
@@ -70,35 +80,35 @@ function TopNavbar({handleFilter}) {
               aria-labelledby="userDropdown"
             >
               <li>
-                <a
+                <Link
                   className="dropdown-item"
-                  href="#"
+                  to="#"
                   style={{ fontFamily: "sans-serif", fontSize: "13px" }}
                 >
                   Profile
-                </a>
+                </Link>
               </li>
               <li>
-                <a
+                <Link
                   className="dropdown-item"
-                  href="#"
+                  to="#"
                   style={{ fontFamily: "sans-serif", fontSize: "13px" }}
                 >
                   Settings
-                </a>
+                </Link>
               </li>
               <li>
                 <hr className="dropdown-divider" />
               </li>
               <li>
-                <a
+                <Link
                   className="dropdown-item"
-                  href="#"
+                  to="#"
                   style={{ fontFamily: "sans-serif", fontSize: "13px" }}
                   onClick={logout}
                 >
                   Logout
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

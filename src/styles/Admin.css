@@ -7,7 +7,8 @@
   color: black;
   font-weight: bold;
   padding: 5px;
-  margin-top: 6px;
+ 
+  margin-bottom: 10px;
 }
 
 .bor {
@@ -370,8 +371,8 @@
 }
 
 /* Media query for screens with a maximum width of 768px and minimum height of 500px */
-@media screen and (max-width: 768px) and (min-height: 500px) {
-  .img2 {
+@media screen and (max-width: 768px) and (min-height: 500px){
+  .img2{
     background-attachment: scroll;
     height: auto; /* Auto height based on content */
     padding: 20px; /* Add padding for better spacing */
@@ -388,7 +389,6 @@
       backdrop-filter: none; /* No backdrop filter for screens with width <= 768px and height >= 500px */
       -webkit-backdrop-filter: none; /* No backdrop filter for screens with width <= 768px and height >= 500px */
     }
-
     /* Custom styles for screens with width <= 768px and height >= 500px */
     font-size: 18px;
     padding: 10px;
@@ -409,9 +409,16 @@
   color: black;
   font-family: sans-serif;
   font-weight: bolder;
-  margin-left: 3%;
+  margin-top:30px ;
 }
 
+.page-heading-form {
+  color: black;
+  font-family: sans-serif;
+  font-weight: bolder;
+  margin-top:30px ;
+  margin-left: 3%;
+}
 .category-data-table {
 }
 
@@ -437,7 +444,7 @@
 }
 .category-button-div {
   margin-top: -35px;
-  margin-left: -1px;
+  margin-left: -34px;
 }
 
 #product-preview-btn {

@@ -112,8 +112,7 @@ export default function AdminLogin() {
                 Login
               </button>
             </div>
-          </form>
-         
+          </form>  
         </div>
       </div>
       <Outlet />
