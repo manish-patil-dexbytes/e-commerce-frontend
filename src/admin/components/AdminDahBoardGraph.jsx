@@ -32,7 +32,7 @@ function BarGraph() {
           backgroundColor: "rgba(227, 151, 75, 1)",
           borderColor: "rgba(0, 0, 0, 1)",
           borderWidth: 1,
-          data: [12, 19, 30, 5, 10, 5 ,20,23,19,12],
+          data: [12,19,30,5,10,5,20,23,19,12],
           
         },
       ],

@@ -5,6 +5,25 @@ const api = axios.create({
   baseURL: API_URL,
 });
 
+const getVariants = async ()=>{
+  try{
+    const response = await api.get("/variants")
+    return response.data;
+  }catch(error){
+    console.error("Error in fetching variants",error)
+    return [];
+  }
+}
+
+const getAttributes = async()=>{
+  try{
+    const response = await api.get ("/attributes")
+    return response.data;
+  }catch(error){
+    console.error("Error in  fetching Attributes",error)
+    return []; }
+}
+
 const deleteProduct = async (id) => {
   try {
     const response = await axios.delete(`${API_URL}/deleteProduct/${id}`);
@@ -64,6 +83,8 @@ export {
   addProduct,
   deleteProduct,
   updateProductStatus,
+  getVariants,
+  getAttributes,
 };
 
 //==================================================================

@@ -18,7 +18,12 @@ import {
   ValidateMedia,
 } from "../../helpers/validations";
 import ToastComponent from "../components/Toast";
-import { addProduct, getCategories } from "../../helpers/api/product.Api";
+import {
+  addProduct,
+  getCategories,
+  getVariants,
+  getAttributes,
+} from "../../helpers/api/product.Api";
 
 export default function AddProduct() {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -33,11 +38,15 @@ export default function AddProduct() {
   const [sku, setSKU] = useState(""); //set sku
   const [selectedImages, setSelectedImages] = useState([]); // set selected images in array
   const [published, setPublished] = useState(1); //staus
+  const [selectedVariant, setSelectedVariants] = useState([]);
 
   //=====================================================
   const [selectedVideos, setSelectedVideos] = useState([]);
   const mediaFiles = [...selectedImages, ...selectedVideos];
-  //=====================================================
+  //=======================================================
+  const [attributes, setAttributes] = useState([]);
+  const [selectFields, setSelectFields] = useState([]);
+  //======================================================
   //validations states
   const [productError, setProductError] = useState("");
   const [categoryError, setCategoryError] = useState("");
@@ -48,7 +57,8 @@ export default function AddProduct() {
   const [mediaError, setMediaError] = useState("");
   const [showToast, SetShowToast] = useState(false);
   const [message, setMessage] = useState("");
-  const [treeData, setTreeData] = useState([]);
+  const [treeData, setTreeData] = useState([]); //hook for holding category data from api
+  const [variants, setVariants] = useState([]); //hook for holding the variants from api
   const [validateProduct, setValidateProduct] = useState(false);
   const [validateSku, setValidateSku] = useState(false);
   const [validatePrice, setValidatePrice] = useState(false);
@@ -58,20 +68,26 @@ export default function AddProduct() {
   const [validateMedia, setValidateMedia] = useState(false);
   const navigate = useNavigate();
   //=======================================================
-  // API to get all the category and sub category
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getCategories();
-        const formattedData = buildTree(data);
-        setTreeData(formattedData);
+        const categories = await getCategories();
+        const formattedCategories = buildTree(categories);
+        setTreeData(formattedCategories);
+
+        const variantData = await getVariants();
+        setVariants(variantData);
+
+        const attributeData = await getAttributes();
+        setAttributes(attributeData);
       } catch (error) {
-        console.error("Error fetching data from the server:", error);
+        console.error("Error fetching data:", error);
+        // Handle error - show message or fallback logic
       }
     };
     fetchData();
   }, []);
-  //fnction uto handle the form data
+  //fnction to handle the form data
   const onSubmit = async (e) => {
     e.preventDefault();
     validateText(product_name, setProductError, setValidateProduct);
@@ -117,11 +133,23 @@ export default function AddProduct() {
         formData.append("launch_date", launchDate);
         formData.append("description", description);
         formData.append("status", published);
-
         // loop to iterate the  images  stored in a variable  and append it to our  formData variable as an array of images
         for (let i = 0; i < mediaFiles.length; i++) {
           formData.append("images", mediaFiles[i]);
         }
+        //===================================================
+        // Assuming 'selectedFields' holds the array of objects you mentioned
+        for (let i = 0; i < selectFields.length; i++) {
+          formData.append(`variants[${i}][variant]`, selectFields[i].variant);
+          // Assuming 'attributes' in each object is an array
+          for (let j = 0; j < selectFields[i].attributes.length; j++) {
+            formData.append(
+              `variants[${i}][attributes][]`,
+              selectFields[i].attributes[j]
+            );
+          }
+        }
+        //===================================================
         const response = await addProduct(formData);
         navigate(-1);
       }
@@ -137,7 +165,47 @@ export default function AddProduct() {
     setMessage("Product Already Exist ");
     SetShowToast(true);
   };
-  //==========================================================
+  //=========================================================
+  const handleAddSelectFields = (e) => {
+    setSelectFields([...selectFields, { variant: "", attributes: [] }]);
+  };
+
+  const handleRemoveSelectFields = (index) => {
+    const updatedFields = [...selectFields];
+    updatedFields.splice(index, 1);
+    setSelectFields(updatedFields);
+  };
+
+  const handleVariantChange = (value, index) => {
+    const updatedFields = [...selectFields];
+    updatedFields[index].variant = value;
+    setSelectFields(updatedFields);
+  };
+  //   const handleVariantChange = (value, index) => {
+  //   const updatedFields = [...selectFields];
+  //   updatedFields[index].variant = value;
+
+  //   const selectedVariant = variants.find((variant) => variant.id === value);
+
+  //   if (selectedVariant) {
+  //     const filteredAttributes = attributes.filter(
+  //       (attribute) => attribute.variant_id === selectedVariant.id
+  //     );
+  //     updatedFields[index].attributes = filteredAttributes.map((attr) => attr.id);
+  //     setSelectFields(updatedFields);
+  //   } else {
+  //     updatedFields[index].attributes = [];
+  //     setSelectFields(updatedFields);
+  //   }
+  // };
+
+  const handleAttributeChange = (value, index) => {
+    const updatedFields = [...selectFields];
+    updatedFields[index].attributes = value;
+    setSelectFields(updatedFields);
+  };
+
+  //=========================================================
   //function to tree structure of category and sub category
   const buildTree = (categories, parent_id = null) => {
     let tree = [];
@@ -173,9 +241,7 @@ export default function AddProduct() {
   const handleProduct = (e) => {
     setProduct(e.target.value);
   };
-
   const handleCat = (selectedNodes) => {
-    console.log("selectedNodes", selectedNodes);
     if (selectedNodes) {
       setSelectedCategory(selectedNodes);
       setCategoryName(selectedNodes.label);
@@ -262,9 +328,8 @@ export default function AddProduct() {
   //=========================================
   //on cancel handler
   const onCancel = (e) => {
-    navigate(-1);
+    navigate("/admin/product");
   };
-  console.log(categoryName);
   //==========================================
   return (
     <>
@@ -301,7 +366,7 @@ export default function AddProduct() {
             </div>
           </nav>
           <main className="col-md-10 form-flex">
-            <TopNavbar  showSearchBar={false} />
+            <TopNavbar showSearchBar={false} />
             <div className="row col-md-10">
               <div className="col-md-6">
                 <p className="page-heading">Add Product</p>
@@ -349,6 +414,83 @@ export default function AddProduct() {
                   <label htmlFor="toggle" className="toggle-label" />
                 </div>
               </div>
+              {/* ========================================= */}
+
+              <div className="row">
+                {selectFields.map((fields, index) => (
+                  <div key={index} className="col-md-12 mb-2">
+                    <div className="row">
+                      <div className="col-md-4">
+                        <label htmlFor={`variant-${index}`}>
+                          Select Variant*
+                        </label>
+                        <div
+                          className="mb-1 mr-sm-2 form-control"
+                          id="category-form-input-field"
+                          style={{ height: "40px" }}
+                        >
+                          <TreeSelect
+                            treeData={variants.map((item) => ({
+                              title: item.name,
+                              value: item.id,
+                            }))}
+                            value={fields.variant}
+                            onChange={(value) =>
+                              handleVariantChange(value, index)
+                            }
+                            placeholder={<span>Select a Variant</span>}
+                            style={{ width: "100%" }}
+                            allowClear
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <label>Attributes*</label>
+                        <div
+                          className="mb-1 mr-sm-2 form-control"
+                          id="category-form-input-field"
+                        >
+                          <TreeSelect
+                            treeData={attributes.map((item) => ({
+                              title: item.attribute,
+                              value: item.id,
+                            }))}
+                            value={fields.attributes}
+                            onChange={(value) =>
+                              handleAttributeChange(value, index)
+                            }
+                            placeholder="Select Attributes"
+                            style={{ width: "100%" }}
+                            treeCheckable
+                            multiple
+                          />
+                        </div>
+                      </div>
+                      <div className="col-md-2" style={{ marginTop: "22px" }}>
+                        {index === selectFields.length - 1 && (
+                          <button
+                            onClick={() => handleRemoveSelectFields(index)}
+                            className="button-cancel-cat"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <div className="col-md-12 mt-2">
+                  <button
+                    type="button"
+                    onClick={handleAddSelectFields}
+                    className="button-add-cat"
+                    style={{ marginTop: "-30px", marginLeft: "1px" }}
+                  >
+                    Add Variants
+                  </button>
+                </div>
+              </div>
+              {/* ================================================= */}
               <div className="row mt-3">
                 <div className="col-md-4">
                   <label>Category*</label>
@@ -364,7 +506,6 @@ export default function AddProduct() {
                       style={{ width: 300 }}
                       dropdownStyle={{
                         maxHeight: 200,
-                        overflow: "auto",
                         zIndex: 1500,
                       }}
                       showSearch={false}
@@ -553,7 +694,9 @@ export default function AddProduct() {
           </main>
         </div>
       </div>
-      <Outlet/>
+      <Outlet />
     </>
   );
 }
+
+
