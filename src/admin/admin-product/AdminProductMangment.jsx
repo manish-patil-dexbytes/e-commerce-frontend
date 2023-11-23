@@ -38,7 +38,7 @@ export default function ProductManagment() {
   useEffect(() => {
     getProduct();
   }, []);
-
+ console.log(product)
   const handleDeleteProduct = async (id) => {
     try {
       const success = await deleteProduct(id);
@@ -50,7 +50,7 @@ export default function ProductManagment() {
       console.error("Error deleting product:", error);
     }
   };
-
+   console.log(product)
   const handleStatusChange = async (row) => {
     const updatedStatus = row.status === 1 ? 0 : 1; // Toggle status between 0 and 1
     try {

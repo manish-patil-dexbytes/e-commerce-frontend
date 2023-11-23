@@ -436,7 +436,12 @@ import {
   validateAlphaNumeric,
   ValidateMedia,
 } from "../../helpers/validations";
-import { getCategories, editProduct ,getVariants,getAttributes} from "../../helpers/api/product.Api";
+import {
+  getCategories,
+  editProduct,
+  getVariants,
+  getAttributes,
+} from "../../helpers/api/product.Api";
 
 export default function EditProduct({ record, onCancel, onSave }) {
   const [editedData, setEditedData] = useState({ ...record });
@@ -465,6 +470,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
   const [validateCategory, setValidateCategory] = useState(false);
   const [validateMedia, setValidateMedia] = useState(false);
   //==============================================
+  const uniqueImages = Array.from(new Set(editedData.images.split(',')));
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditedData({ ...editedData, [name]: value });
@@ -603,6 +609,26 @@ export default function EditProduct({ record, onCancel, onSave }) {
       }
     }
   };
+  const formatedData = [];
+  if (editedData.attributes != null) {
+    const variantEntries = Object.entries(editedData.attributes);
+    // Iterating through the array of entries to access each variant and its attributes
+    variantEntries.forEach(([variant, attributes]) => {
+      const dataObject = {
+        variant,
+        attributes,
+      };
+      formatedData.push(dataObject);
+    });
+  }
+  //====================================================
+  useEffect(() => {
+    const formattedSelectFields = formatedData.map((data) => ({
+      variant: data.variant,
+      attributes: data.attributes,
+    }));
+    setSelectFields(formattedSelectFields);
+  }, []);
   //==============================================
   //function to tree structure of category and sub category
   const buildTree = (categories, parent_id = null) => {
@@ -631,6 +657,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
       return subTree; // Return the subcategory tree
     }
   };
+ 
   //==============================================
   useEffect(() => {
     const fetchData = async () => {
@@ -651,7 +678,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
     };
     fetchData();
   }, []);
-
   //=============================================
   return (
     <div className="container-fluid">
@@ -685,81 +711,80 @@ export default function EditProduct({ record, onCancel, onSave }) {
               </div>
             </div>
             {/* ================================ */}
-            
             <div className="row">
-                {selectFields.map((fields, index) => (
-                  <div key={index} className="col-md-12 mb-2">
-                    <div className="row">
-                      <div className="col-md-4">
-                        <label htmlFor={`variant-${index}`}>
-                          Select Variant*
-                        </label>
-                        <div
-                          className="mb-1 mr-sm-2 form-control"
-                          id="category-form-input-field"
-                          style={{ height: "40px" }}
-                        >
-                          <TreeSelect
-                            treeData={variants.map((item) => ({
-                              title: item.name,
-                              value: item.id,
-                            }))}
-                            value={fields.variant}
-                            onChange={(value) =>
-                              handleVariantChange(value, index)
-                            }
-                            placeholder={<span>Select a Variant</span>}
-                            style={{ width: "100%" }}
-                            allowClear
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <label>Attributes*</label>
-                        <div
-                          className="mb-1 mr-sm-2 form-control"
-                          id="category-form-input-field"
-                        >
-                          <TreeSelect
-                            treeData={attributes.map((item) => ({
-                              title: item.attribute,
-                              value: item.id,
-                            }))}
-                            value={fields.attributes}
-                            onChange={(value) =>
-                              handleAttributeChange(value, index)
-                            }
-                            placeholder="Select Attributes"
-                            style={{ width: "100%" }}
-                            treeCheckable
-                            multiple
-                          />
-                        </div>
-                      </div>
-                      <div className="col-md-2" style={{ marginTop: "22px" }}>
-                        {index === selectFields.length - 1 && (
-                          <button
-                            onClick={() => handleRemoveSelectFields(index)}
-                            className="button-cancel-cat"
-                          >
-                            Remove
-                          </button>
-                        )}
+              {selectFields.map((fields, index) => (
+                <div key={index} className="col-md-12 mb-2">
+                  <div className="row">
+                    <div className="col-md-4">
+                      <label htmlFor={`variant-${index}`}>
+                        Select Variant*
+                      </label>
+                      <div
+                        className="mb-1 mr-sm-2 form-control"
+                        id="category-form-input-field"
+                        style={{ height: "40px" }}
+                      >
+                        <TreeSelect
+                          treeData={variants.map((item) => ({
+                            title: item.name,
+                            value: item.id,
+                          }))}
+                          value={fields.variant}
+                          onChange={(value) =>
+                            handleVariantChange(value, index)
+                          }
+                          placeholder={<span>Select a Variant</span>}
+                          style={{ width: "100%" }}
+                          allowClear
+                        />
                       </div>
                     </div>
+                    <div className="col-md-4">
+                      <label>Attributes*</label>
+                      <div
+                        className="mb-1 mr-sm-2 form-control"
+                        id="category-form-input-field"
+                      >
+                        <TreeSelect
+                          treeData={attributes.map((item) => ({
+                            title: item.attribute,
+                            value: item.id,
+                          }))}
+                          value={fields.attributes}
+                          onChange={(value) =>
+                            handleAttributeChange(value, index)
+                          }
+                          placeholder="Select Attributes"
+                          style={{ width: "100%" }}
+                          treeCheckable
+                          multiple
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-2" style={{ marginTop: "22px" }}>
+                      {index === selectFields.length - 1 && (
+                        <button
+                          onClick={() => handleRemoveSelectFields(index)}
+                          className="button-cancel-cat"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
                   </div>
-                ))}
-                <div className="col-md-12 mt-2">
-                  <button
-                    type="button"
-                    onClick={handleAddSelectFields}
-                    className="button-add-cat"
-                    style={{ marginTop: "-30px", marginLeft: "1px" }}
-                  >
-                    Add Variants
-                  </button>
                 </div>
+              ))}
+              <div className="col-md-12 mt-2">
+                <button
+                  type="button"
+                  onClick={handleAddSelectFields}
+                  className="button-add-cat"
+                  style={{ marginTop: "-30px", marginLeft: "1px" }}
+                >
+                  Add Variants
+                </button>
               </div>
+            </div>
             {/* ====================================== */}
             <div className="row mt-3">
               <div className="col-md-4">
@@ -912,7 +937,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                     </div>
                   ))
                 ) : editedData && editedData.images ? (
-                  editedData.images.split(",").map((imageName, index) => (
+                   uniqueImages.map((imageName, index) => (
                     <img
                       key={index}
                       src={`${API_URL}/product-image-uploads/${imageName.trim()}`}
