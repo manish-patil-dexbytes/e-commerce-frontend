@@ -1,26 +1,25 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import NavigationBar from "../components/AdminSideNavBar";
 import TopNavbar from "../components/AdminTopNavBar";
-import { API_URL } from "../../helpers/config";
 import {
   validateVariantName,
   validateVariantAttribute,
 } from "../../helpers/validations";
 import ToastComponent from "../components/Toast";
-export default function AddProductVarient() {
-  const [varientName, setVarientName] = useState("");
+import { postData } from "../../helpers/api/general.Api";
+export default function AddProductVariant() {
+  const [variantName, setVariantName] = useState("");
   const [inputFields, setInputFields] = useState([]);
-  const [varianNameError, setVariantNameError] = useState("");
+  const [variantNameError, setVariantNameError] = useState("");
   const [validateVariant, setValidateVariant] = useState(false);
   const [attributeError, setAttributeError] = useState("");
   const [validateAttribute, setValidateAttribute] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const navigate = useNavigate();
-  const handleVarient = (e) => {
-    setVarientName(e.target.value);
+  const handleVariant = (e) => {
+    setVariantName(e.target.value);
   };
   const handleInputChange = (id, value) => {
     const updatedFields = inputFields.map((field) => {
@@ -34,7 +33,7 @@ export default function AddProductVarient() {
   const showToastMessage = (message) => {
     setToastMessage(message);
     setShowToast(true);
-    setTimeout(() => setShowToast(false),3000); // Close the toast after 3 seconds
+    setTimeout(() => setShowToast(false), 3000); // Close the toast after 3 seconds
   };
   const addInputField = () => {
     setInputFields([...inputFields, { id: inputFields.length, value: "" }]);
@@ -49,27 +48,34 @@ export default function AddProductVarient() {
     if (inputFields.some((field) => !field.value.trim())) {
       showToastMessage("Enter attribute name");
     }
-    validateVariantName(varientName, setVariantNameError, setValidateVariant);
+    validateVariantName(variantName, setVariantNameError, setValidateVariant);
     validateVariantAttribute(
       inputFields,
       setAttributeError,
       setValidateAttribute
     );
     if (validateVariant === true && validateAttribute === true) {
-      const attributes = inputFields
-        .map((field) => field.value)
-        .filter((value) => value && value.trim() !== ""); // Filtering  empty and null values
+      const uniqueAttributes = Array.from(
+        new Set(inputFields.map((field) => field.value.trim().toLowerCase()))
+      ).filter((value) => value.trim() !== "");
 
-      if (varientName && varientName.trim() !== "" && attributes.length > 0) {
+      setInputFields(
+        uniqueAttributes.map((attr, index) => ({ id: index, value: attr }))
+      );
+      if (
+        variantName &&
+        variantName.trim() !== "" &&
+        uniqueAttributes.length > 0
+      ) {
         try {
-          const response = await axios.post(`${API_URL}/add-variant`, {
-            variant: varientName,
-            attributes: attributes,
+          const response = await postData(`/add-variant`, {
+            variant: variantName,
+            attributes: uniqueAttributes,
           });
           navigate(-1);
         } catch (error) {
           console.error("Error in adding Variant", error);
-          showToastMessage("Variant already exist");
+          showToastMessage("Variant already exists");
         }
       }
     }
@@ -77,7 +83,6 @@ export default function AddProductVarient() {
   const onCancel = () => {
     navigate(-1);
   };
-  console.log(attributeError);
   return (
     <>
       {showToast && (
@@ -106,17 +111,17 @@ export default function AddProductVarient() {
             >
               <div className="row">
                 <div className="col-md-4 mb-4">
-                  <label htmlFor="varientName">Varient Name*</label>
+                  <label htmlFor="variantName">Variant Name*</label>
                   <input
                     id="category-form-input-field"
                     type="text"
                     name="product_name"
                     className="form-control mb-1 mr-sm-2"
-                    onChange={handleVarient}
-                    placeholder="Varient Name"
+                    onChange={handleVariant}
+                    placeholder="Variant Name"
                   />
-                  {varianNameError && (
-                    <div className="error-message">{varianNameError}</div>
+                  {variantNameError && (
+                    <div className="error-message">{variantNameError}</div>
                   )}
                   {attributeError && (
                     <div className="error-message">{attributeError}</div>

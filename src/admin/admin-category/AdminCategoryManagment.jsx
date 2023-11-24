@@ -11,6 +11,8 @@ import { API_URL } from "../../helpers/config";
 import ToastComponent from "../components/Toast";
 import { EditSvg, ViewSvg } from "../components/SVG";
 import { updateCategoryStatus } from "../../helpers/api/category.Api";
+import { getData, getDataForFilter, updateData } from "../../helpers/api/general.Api";
+
 
 export default function AdminCatMangment() {
   const [category, setCategory] = useState([]); // State for  category name
@@ -21,6 +23,7 @@ export default function AdminCatMangment() {
   const [selectedId, setSelectedId] = useState(null);
   const [showToast, setShowToast] = useState(false); // State for showing the toast
   const [toastMessage, setToastMessage] = useState("");
+   let setCategoryResponse
   //====================================================
   //Toast for showing the messages
   const showToastMessage = (message) => {
@@ -28,11 +31,12 @@ export default function AdminCatMangment() {
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000); // Close the toast after 3 seconds
   };
+ 
   //========================================================
-  const getCategory = async (filter = "") => {
+  const getCategory = async (filter = '') => {
     try {
-      const response = await axios.get(`${API_URL}/get-categories`);
-      const filteredData = response.data.filter((item) =>
+      const response = await getData(`/get-categories`);
+      const filteredData = response.filter((item) =>
         item.category_name.toLowerCase().includes(filter.toLowerCase())
       );
       setCategory(filteredData);
@@ -40,9 +44,34 @@ export default function AdminCatMangment() {
       console.error(error);
     }
   };
+  
   useEffect(() => {
-    getCategory();
+    getCategory(); // Fetch all categories initially
   }, []);
+
+  const viewCategoryData = async (id) => {
+    try {
+      const data = await getData(`/view-categories/${id}`);
+      setViewCategory(data); // Assuming setViewCategory is a state updater function
+    } catch (error) {
+      console.error("API request error:", error);
+    }
+  };
+  
+  const handleStatusChange = async (row) => {
+    const updatedStatus = row.status === 1 ? 0 : 1;
+    try {
+      const isUpdated = await updateCategoryStatus(row.id, updatedStatus);
+      if (isUpdated) {
+        const updatedCategory = category.map((item) =>
+          item.id === row.id ? { ...item, status: updatedStatus } : item
+        );
+        setCategory(updatedCategory);
+      }
+    } catch (error) {
+      console.error("Error saving record:", error);
+    }
+  };
   //parsing data to data table
   const columns = [
     {
@@ -126,30 +155,8 @@ export default function AdminCatMangment() {
     }
   }, [showViewModal]);
 
-  const viewCategoryData = async (id) => {
-    try {
-      const response = await axios.get(`${API_URL}/view-categories/${id}`);
-      setViewCategory(response.data);
-    } catch (error) {
-      console.error("API request error:", error);
-    }
-  };
   //======================================================
-  const handleStatusChange = async (row) => {
-    const updatedStatus = row.status === 1 ? 0 : 1;
-    try {
-      const isUpdated = await updateCategoryStatus(row.id, updatedStatus);
-      if (isUpdated) {
-        const updatedCategory = category.map((item) =>
-          item.id === row.id ? { ...item, status: updatedStatus } : item
-        );
-        setCategory(updatedCategory);
-      }
-    } catch (error) {
-      console.error("Error saving record:", error);
-    }
-  };
-
+ 
   const handleToastClose = () => setShowToast(false);
   return (
     <>

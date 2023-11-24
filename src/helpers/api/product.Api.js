@@ -5,63 +5,7 @@ const api = axios.create({
   baseURL: API_URL,
 });
 
-const getVariants = async ()=>{
-  try{
-    const response = await api.get("/variants")
-    return response.data;
-  }catch(error){
-    console.error("Error in fetching variants",error)
-    return [];
-  }
-}
 
-const getAttributes = async()=>{
-  try{
-    const response = await api.get ("/attributes")
-    return response.data;
-  }catch(error){
-    console.error("Error in  fetching Attributes",error)
-    return []; }
-}
-
-const deleteProduct = async (id) => {
-  try {
-    const response = await axios.delete(`${API_URL}/deleteProduct/${id}`);
-    return response.data.success;
-  } catch (error) {
-    console.error("Error deleting product:", error);
-    throw error;
-  }
-};
-const getCategories = async () => {
-  try {
-    const response = await api.get("/categories");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-    return [];
-  }
-};
-
-const addProduct = async (formData) => {
-  try {
-    const response = await axios.post(`${API_URL}/add-product`, formData);
-    return response;
-  } catch (error) {
-    console.error("Error uploading product:", error);
-    throw error;
-  }
-};
-
-const editProduct = async (formData) => {
-  try {
-    const response = await api.put("/edit-product", formData);
-    return response.data;
-  } catch (error) {
-    console.error("Error editing product:", error);
-    throw error;
-  }
-};
 
 const updateProductStatus = async (id, updatedStatus) => {
   try {
@@ -78,13 +22,8 @@ const updateProductStatus = async (id, updatedStatus) => {
 };
 
 export {
-  getCategories,
-  editProduct,
-  addProduct,
-  deleteProduct,
+
   updateProductStatus,
-  getVariants,
-  getAttributes,
 };
 
 //==================================================================

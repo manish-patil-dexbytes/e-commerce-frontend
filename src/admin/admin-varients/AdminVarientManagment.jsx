@@ -9,6 +9,7 @@ import NavigationBar from "../components/AdminSideNavBar";
 import TopNavbar from "../components/AdminTopNavBar";
 import { DeleteSvg, EditSvg } from "../components/SVG";
 import EditVariant from "./AdminEditVariant";
+import { deleteData, getData } from "../../helpers/api/general.Api";
 
 export default function ProductVariant() {
   const [data, setData] = useState([]);
@@ -16,25 +17,25 @@ export default function ProductVariant() {
   const [selectedRecord, setSelectedRecord] = useState(null);
 
  
-    const getVariant = async (filter ="") => {
-      try {
-        const response = await axios.get(`${API_URL}/get-variant`);
-        const filteredData = response.data.filter((item) =>
+  const getVariant = async (filter = "") => {
+    try {
+      const filteredData = await getData(`/get-variant`);
+      const filteredVariants = filteredData.filter((item) =>
         item.name.toLowerCase().includes(filter.toLowerCase())
       );
-        setData(filteredData);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-  useEffect(()=>{
-    getVariant()
-  },[]);
-
+      setData(filteredVariants);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+  
+  useEffect(() => {
+    getVariant();
+  }, []);
   const handleDeleteVariant = async (id) => {
     try {
-      const response = await axios.delete(`${API_URL}/deleteVariant/${id}`);
-      if (response.data.success) {
+      const response = await deleteData(`/deleteVariant/${id}`);
+      if (response.success) {
         const updatedData = data.filter((item) => item.id !== id);
         setData(updatedData);
       }
@@ -42,7 +43,6 @@ export default function ProductVariant() {
       console.error("Error deleting product:", error);
     }
   };
-
   const columns = [
     {
       name: "Name",
@@ -53,7 +53,18 @@ export default function ProductVariant() {
       name: "Attributes",
       selector: "attributes",
       sortable: true,
-      cell: (row) => <div>{row.attributes}</div>,
+      cell: (row) => (
+        <div>
+          {row.attributes
+            .split(',')
+            .map((attribute, index) => (
+              <span key={index}>
+                {attribute.charAt(0).toUpperCase() + attribute.slice(1)}
+                {index < row.attributes.split(',').length - 1 ? ", " : ""}
+              </span>
+            ))}
+        </div>
+      ),
     },
     {
       name: "Actions",
@@ -72,6 +83,7 @@ export default function ProductVariant() {
       ),
     },
   ];
+  
   const handleEdit = (row) => {
     const selectedRow = data.find((item) => item.id === row);
     if (selectedRow) {

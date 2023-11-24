@@ -24,6 +24,7 @@ import {
   getVariants,
   getAttributes,
 } from "../../helpers/api/product.Api";
+import { getData, postData } from "../../helpers/api/general.Api";
 
 export default function AddProduct() {
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -38,7 +39,6 @@ export default function AddProduct() {
   const [sku, setSKU] = useState(""); //set sku
   const [selectedImages, setSelectedImages] = useState([]); // set selected images in array
   const [published, setPublished] = useState(1); //staus
-  const [selectedVariant, setSelectedVariants] = useState([]);
 
   //=====================================================
   const [selectedVideos, setSelectedVideos] = useState([]);
@@ -71,14 +71,14 @@ export default function AddProduct() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const categories = await getCategories();
+        const categories = await getData(`/categories`);
         const formattedCategories = buildTree(categories);
         setTreeData(formattedCategories);
 
-        const variantData = await getVariants();
+        const variantData = await getData(`/variants`);
         setVariants(variantData);
 
-        const attributeData = await getAttributes();
+        const attributeData = await getData(`/attributes`);
         setAttributes(attributeData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -87,7 +87,6 @@ export default function AddProduct() {
     };
     fetchData();
   }, []);
-  //fnction to handle the form data
   const onSubmit = async (e) => {
     e.preventDefault();
     validateText(product_name, setProductError, setValidateProduct);
@@ -150,7 +149,7 @@ export default function AddProduct() {
           }
         }
         //===================================================
-        const response = await addProduct(formData);
+        const response = await postData(`/add-product`, formData);
         navigate(-1);
       }
     } catch (error) {
@@ -181,24 +180,7 @@ export default function AddProduct() {
     updatedFields[index].variant = value;
     setSelectFields(updatedFields);
   };
-  //   const handleVariantChange = (value, index) => {
-  //   const updatedFields = [...selectFields];
-  //   updatedFields[index].variant = value;
-
-  //   const selectedVariant = variants.find((variant) => variant.id === value);
-
-  //   if (selectedVariant) {
-  //     const filteredAttributes = attributes.filter(
-  //       (attribute) => attribute.variant_id === selectedVariant.id
-  //     );
-  //     updatedFields[index].attributes = filteredAttributes.map((attr) => attr.id);
-  //     setSelectFields(updatedFields);
-  //   } else {
-  //     updatedFields[index].attributes = [];
-  //     setSelectFields(updatedFields);
-  //   }
-  // };
-
+  
   const handleAttributeChange = (value, index) => {
     const updatedFields = [...selectFields];
     updatedFields[index].attributes = value;
@@ -307,24 +289,7 @@ export default function AddProduct() {
     };
     reader.readAsDataURL(image);
   };
-  //function to remove selected image
-  const removeImage = (index) => {
-    const updatedImages = [...selectedImages];
-    const removedImage = updatedImages.splice(index, 1)[0];
-    if (removedImage) {
-      if (typeof removedImage === "string") {
-        URL.revokeObjectURL(removedImage);
-      } else if (removedImage instanceof File) {
-        URL.revokeObjectURL(URL.createObjectURL(removedImage));
-      }
-      setSelectedImages(
-        updatedImages.map((image, idx) => ({
-          ...image,
-          index: idx, // Shift the indexes after deletion
-        }))
-      );
-    }
-  };
+ 
   //=========================================
   //on cancel handler
   const onCancel = (e) => {

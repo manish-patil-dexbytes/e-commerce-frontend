@@ -10,7 +10,8 @@ import "../../styles/Admin.css";
 import { DeleteSvg, EditSvg } from "../components/SVG";
 import ToastComponent from "../components/Toast";
 import axios from "axios";
-import { deleteProduct, updateProductStatus } from "../../helpers/api/product.Api";
+import { deleteProduct,  updateProductStatus } from "../../helpers/api/product.Api";
+import { deleteData, getData } from "../../helpers/api/general.Api";
 
 export default function ProductManagment() {
   const [product, setProduct] = useState([]);
@@ -22,8 +23,8 @@ export default function ProductManagment() {
 
   const getProduct = async (filter = "") => {
     try {
-      const response = await axios.get(`${API_URL}/get-products`);
-      const filteredData = response.data.filter(
+      const data = await getData(`${API_URL}/get-products`);
+      const filteredData = data.filter(
         (item) =>
           item.product_name.toLowerCase().includes(filter.toLowerCase()) ||
           (item.category_name &&
@@ -34,23 +35,23 @@ export default function ProductManagment() {
       console.error(error);
     }
   };
-
   useEffect(() => {
     getProduct();
   }, []);
+  
  console.log(product)
-  const handleDeleteProduct = async (id) => {
-    try {
-      const success = await deleteProduct(id);
-      if (success) {
-        const updatedProduct = product.filter((item) => item.product_id !== id);
-        setProduct(updatedProduct);
-      }
-    } catch (error) {
-      console.error("Error deleting product:", error);
+const handleDeleteProduct = async (id) => {
+  try {
+    const success = await deleteData(`/deleteProduct/${id}`);
+    if (success) {
+      const updatedProduct = product.filter((item) => item.product_id !== id);
+      setProduct(updatedProduct);
     }
-  };
-   console.log(product)
+  } catch (error) {
+    console.error("Error deleting product:", error);
+  }
+};
+
   const handleStatusChange = async (row) => {
     const updatedStatus = row.status === 1 ? 0 : 1; // Toggle status between 0 and 1
     try {

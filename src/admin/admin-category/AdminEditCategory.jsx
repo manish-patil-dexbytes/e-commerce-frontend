@@ -5,7 +5,8 @@ import "../../styles/Admin.css";
 import { Outlet } from "react-router-dom";
 import { API_URL } from "../../helpers/config";
 import { validateText } from "../../helpers/validations";
-import axios from "axios";
+import ToastComponent from "../components/Toast";
+import { getData, updateData } from "../../helpers/api/general.Api";
 
 export default function EditRecord({
   record,
@@ -20,13 +21,15 @@ export default function EditRecord({
   const [validate, setValidate] = useState();
   const [categoryError, setCategoryError] = useState(" ");
   const [selectedImage, setSelectedImage] = useState(null);
-
+  const [message, setMessage] = useState("");
+  const [showToast, SetShowToast] = useState(false);
+  const handleToastClose = () => SetShowToast(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/parent-category`);
-        setData(response.data);
+        const data = await getData(`/parent-category`);
+        setData(data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -46,7 +49,7 @@ export default function EditRecord({
     setImageFile(selectedFile);
   };
   //function to handle the form
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     validateText(editedData.category_name, setCategoryError, setValidate);
     if (validate === true) {
@@ -59,30 +62,41 @@ export default function EditRecord({
       if (imageFile) {
         formData.append("image", imageFile);
       }
-
-      axios
-        .put(`${API_URL}/edit-category`, formData)
-        .then((response) => {
-          console.log("API Response:", response.data);
-          if (response.data.success) {
-            onSave(editedData);
-            getCategory();
-          }
-        })
-        .catch((error) => {
-          console.error("Error uploading data:", error);
-        });
+  
+      try {
+        const response = await updateData(`${API_URL}/edit-category`, formData);
+        if (response.success) {
+          onSave(editedData);
+          getCategory();
+          setMessage("Data updated successfully");
+          SetShowToast(true);
+        } else {
+          setMessage(response.message);
+          SetShowToast(true);
+        }
+      } catch (error) {
+        console.error("Error uploading data:", error);
+        setMessage("Failed to update data");
+        SetShowToast(true);
+      }
     }
   };
-
   const handleParent = (e) => {
     const selectedParentId = e.target.value;
     setEditedData({ ...editedData, parent_id: selectedParentId });
   };
-
-  // };
-
   return (
+    <>
+    {showToast &&(
+      <div className="toast-css">
+   <ToastComponent
+      showToast={true}
+      onClose={handleToastClose}
+      message={message}
+      delay={3000}
+   />
+      </div>
+    )}
     <div className="container-fluid">
       <div className="row">
         {/* Sidebar */}
@@ -202,5 +216,6 @@ export default function EditRecord({
       </div>
       <Outlet />
     </div>
+    </>
   );
 }

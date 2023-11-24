@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/Admin.css";
-import axios from "axios";
 import { useNavigate, Outlet } from "react-router-dom";
 import NavigationBar from "../components/AdminSideNavBar";
 import TopNavbar from "../components/AdminTopNavBar";
@@ -10,6 +9,7 @@ import {
   validateDescriptiionInput,
 } from "../../helpers/validations";
 import ToastComponent from "../components/Toast";
+import { getData,postData } from "../../helpers/api/general.Api";
 function AddCategory() {
   // State variables for form inputs
   const [category, setCategory] = useState("");
@@ -68,7 +68,7 @@ function AddCategory() {
     navigate("/admin/category");
   };
   //=========================================================
-  //Function to handle form submission
+  //Function to handle form submission 
   const onSubmit = async (e) => {
     e.preventDefault();
     validateCategoryInput(category, setCategoryError, setCategoryValidate);
@@ -77,16 +77,15 @@ function AddCategory() {
       setDescriptionError,
       setDescriptionValidate
     );
-    // validateImageInput(image, setImageError, setImageValidate);
     if (CategoryValidate === true && DescriptionValidate === true) {
       try {
-        var formData = new FormData();
+        const formData = new FormData();
         formData.append("category_name", category);
         formData.append("parent_category", parent);
         formData.append("description", description);
         formData.append("status", 1);
         formData.append("image", image);
-        await axios.post(`${API_URL}/add-category`, formData); //API to add category
+        await postData(`/add-category`, formData);       
         navigate(-1);
       } catch (error) {
         console.error(error);
@@ -94,18 +93,15 @@ function AddCategory() {
       }
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/parent-category`);
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, []);
-
+useEffect(() => {
+  getData(`/parent-category`)
+    .then((data) => {
+      setData(data); // setData is a state updater function
+    })
+    .catch((error) => {
+      console.error("API request error:", error);
+    });
+}, []);
   return (
     <>
       {showToast && (
