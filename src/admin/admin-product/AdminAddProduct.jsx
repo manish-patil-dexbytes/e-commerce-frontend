@@ -32,8 +32,8 @@ export default function AddProduct() {
   const [showProductPreview, setShowProductPreview] = useState(false); //state the set preview
   const [launchDate, setLaunchDate] = useState(new Date()); // or any default date in the format "DD/MM/YYYY"
   const [product_name, setProduct] = useState(""); //product name
-  const [price, setPrice] = useState(""); //set price
-  const [quantity, setQuantity] = useState(""); //set quantity
+  const [price, setPrice] = useState(); //set price
+  const [quantity, setQuantity] = useState(); //set quantity
   const [description, setDescription] = useState(""); //set description
   const [discount, setDiscount] = useState(""); //set discount
   const [sku, setSKU] = useState(""); //set sku

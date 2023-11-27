@@ -4,9 +4,6 @@ import { API_URL } from "../config";
 const api = axios.create({
   baseURL: API_URL,
 });
-
-
-
 const updateProductStatus = async (id, updatedStatus) => {
   try {
     const response = await axios.put(`${API_URL}/product-status/status/${id}`, {

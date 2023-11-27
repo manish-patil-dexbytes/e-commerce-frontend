@@ -37,7 +37,6 @@ function BarGraph() {
         },
       ],
     };
-
     // Get the canvas element using the ref
     const ctx = chartRef.current;
 
@@ -55,10 +54,7 @@ function BarGraph() {
         myChart.destroy();
       }
     };
-
-   
   }, []);
-
   return (
     <div className="container col-md-10">
       <div>
@@ -69,5 +65,4 @@ function BarGraph() {
     </div>
   );
 }
-
 export default BarGraph;
