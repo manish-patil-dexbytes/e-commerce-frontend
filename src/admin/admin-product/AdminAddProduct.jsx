@@ -18,15 +18,10 @@ import {
   ValidateMedia,
 } from "../../helpers/validations";
 import ToastComponent from "../components/Toast";
-import {
-  addProduct,
-  getCategories,
-  getVariants,
-  getAttributes,
-} from "../../helpers/api/product.Api";
 import { getData, postData } from "../../helpers/api/general.Api";
 
 export default function AddProduct() {
+  // State declarations for various form fields and validation errors
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categoryName, setCategoryName] = useState(""); //state to pass category  name to preview model
   const [showProductPreview, setShowProductPreview] = useState(false); //state the set preview
@@ -39,14 +34,14 @@ export default function AddProduct() {
   const [sku, setSKU] = useState(""); //set sku
   const [selectedImages, setSelectedImages] = useState([]); // set selected images in array
   const [published, setPublished] = useState(1); //staus
-
-  //=====================================================
   const [selectedVideos, setSelectedVideos] = useState([]);
   const mediaFiles = [...selectedImages, ...selectedVideos];
-  //=======================================================
   const [attributes, setAttributes] = useState([]);
   const [selectFields, setSelectFields] = useState([]);
-  //======================================================
+  const [showToast, SetShowToast] = useState(false);
+  const [message, setMessage] = useState("");
+  const [treeData, setTreeData] = useState([]); //hook for holding category data from api
+  const [variants, setVariants] = useState([]); //hook for holding the variants from api
   //validations states
   const [productError, setProductError] = useState("");
   const [categoryError, setCategoryError] = useState("");
@@ -55,10 +50,6 @@ export default function AddProduct() {
   const [QuantityError, setQuantityError] = useState("");
   const [SKUError, setSKUError] = useState("");
   const [mediaError, setMediaError] = useState("");
-  const [showToast, SetShowToast] = useState(false);
-  const [message, setMessage] = useState("");
-  const [treeData, setTreeData] = useState([]); //hook for holding category data from api
-  const [variants, setVariants] = useState([]); //hook for holding the variants from api
   const [validateProduct, setValidateProduct] = useState(false);
   const [validateSku, setValidateSku] = useState(false);
   const [validatePrice, setValidatePrice] = useState(false);
@@ -68,6 +59,7 @@ export default function AddProduct() {
   const [validateMedia, setValidateMedia] = useState(false);
   const navigate = useNavigate();
   //=======================================================
+  // useEffect to fetch data (categories, variants, attributes) on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -82,13 +74,14 @@ export default function AddProduct() {
         setAttributes(attributeData);
       } catch (error) {
         console.error("Error fetching data:", error);
-        // Handle error - show message or fallback logic
       }
     };
     fetchData();
   }, []);
+  // Function to handle form submission
   const onSubmit = async (e) => {
     e.preventDefault();
+    // Form validation logic and API call to add a new product
     validateText(product_name, setProductError, setValidateProduct);
     validateText(selectedCategory, setCategoryError, setValidateCategory);
     validateAlphaNumeric(sku, setSKUError, setValidateSku);
@@ -148,7 +141,6 @@ export default function AddProduct() {
             );
           }
         }
-        //===================================================
         const response = await postData(`/add-product`, formData);
         navigate(-1);
       }
@@ -157,38 +149,8 @@ export default function AddProduct() {
       handleErrorToast();
     }
   };
-  //========================================================
-  //handle for toast
-  const handleToastClose = () => SetShowToast(false);
-  const handleErrorToast = () => {
-    setMessage("Product Already Exist ");
-    SetShowToast(true);
-  };
   //=========================================================
-  const handleAddSelectFields = (e) => {
-    setSelectFields([...selectFields, { variant: "", attributes: [] }]);
-  };
-
-  const handleRemoveSelectFields = (index) => {
-    const updatedFields = [...selectFields];
-    updatedFields.splice(index, 1);
-    setSelectFields(updatedFields);
-  };
-
-  const handleVariantChange = (value, index) => {
-    const updatedFields = [...selectFields];
-    updatedFields[index].variant = value;
-    setSelectFields(updatedFields);
-  };
-  
-  const handleAttributeChange = (value, index) => {
-    const updatedFields = [...selectFields];
-    updatedFields[index].attributes = value;
-    setSelectFields(updatedFields);
-  };
-
-  //=========================================================
-  //function to tree structure of category and sub category
+  // Function to build a tree structure for categories and subcategories
   const buildTree = (categories, parent_id = null) => {
     let tree = [];
     let subTree = [];
@@ -217,8 +179,37 @@ export default function AddProduct() {
       return subTree; // Return the subcategory tree
     }
   };
-
   //========================================================
+  //handle for toast
+  const handleToastClose = () => SetShowToast(false);
+  const handleErrorToast = () => {
+    setMessage("Product Already Exist ");
+    SetShowToast(true);
+  };
+  //=========================================================
+  // Functions for handling form inputs and setting state values
+  const handleAddSelectFields = (e) => {
+    setSelectFields([...selectFields, { variant: "", attributes: [] }]);
+  };
+  // Handlers for adding, removing, and manipulating variant fields
+  const handleRemoveSelectFields = (index) => {
+    const updatedFields = [...selectFields];
+    updatedFields.splice(index, 1);
+    setSelectFields(updatedFields);
+  };
+
+  const handleVariantChange = (value, index) => {
+    const updatedFields = [...selectFields];
+    updatedFields[index].variant = value;
+    setSelectFields(updatedFields);
+  };
+
+  const handleAttributeChange = (value, index) => {
+    const updatedFields = [...selectFields];
+    updatedFields[index].attributes = value;
+    setSelectFields(updatedFields);
+  };
+
   // handlers for input fields
   const handleProduct = (e) => {
     setProduct(e.target.value);
@@ -249,6 +240,7 @@ export default function AddProduct() {
   const handleSKU = (e) => {
     setSKU(e.target.value);
   };
+  // Handler for toggling product status
   const handleToggle = () => {
     if (published === 1) {
       setPublished(0);
@@ -256,6 +248,7 @@ export default function AddProduct() {
       setPublished(1);
     }
   };
+  // Handlers for handling file selection and previewing images
   const onSelectFile = (e) => {
     const files = e.target.files;
     const selectedFiles = Array.from(files);
@@ -273,6 +266,7 @@ export default function AddProduct() {
   const handlePreview = () => {
     setShowProductPreview(true);
   };
+  // Handler for closing the product preview modal
   const handleClosePreview = () => {
     setShowProductPreview(false);
   };
@@ -289,9 +283,7 @@ export default function AddProduct() {
     };
     reader.readAsDataURL(image);
   };
- 
-  //=========================================
-  //on cancel handler
+  // Handler for onCancel button click
   const onCancel = (e) => {
     navigate("/admin/product");
   };
@@ -299,6 +291,7 @@ export default function AddProduct() {
   return (
     <>
       {showToast && (
+        //ProductPreview component for displaying product preview
         <div className="toast-css">
           <ToastComponent
             showToast={showToast}
@@ -308,8 +301,9 @@ export default function AddProduct() {
           />
         </div>
       )}
-      {/* ProductPreview component */}
+
       {showProductPreview && (
+        // ProductPreview component for displaying product preview
         <ProductPreview
           show={showProductPreview}
           handleClose={handleClosePreview}
@@ -323,14 +317,16 @@ export default function AddProduct() {
         />
       )}
       <div className="container-fluid">
-        {/*  layout components */}
+        {/* The main layout structure for adding a new product */}
         <div className="row">
           <nav className="col-md-2 bg-light sidebar">
             <div className="position-fixed">
+              {/* Sidebar and main content layout */}
               <NavigationBar />
             </div>
           </nav>
           <main className="col-md-10 form-flex">
+            {/* Top navigation bar */}
             <TopNavbar showSearchBar={false} />
             <div className="row col-md-10">
               <div className="col-md-6">
@@ -349,6 +345,7 @@ export default function AddProduct() {
                 </Link>
               </div>
             </div>
+            {/* Form for adding a new product */}
             <form
               encType="multipart/FormData"
               method="post"
@@ -357,6 +354,7 @@ export default function AddProduct() {
               <div className="row">
                 <div className="col-md-4">
                   <label htmlFor="product_name">Product Name*</label>
+                  {/* product name input */}
                   <input
                     id="category-form-input-field"
                     type="text"
@@ -370,6 +368,7 @@ export default function AddProduct() {
                   )}
                 </div>
                 <div className="col-md-8">
+                  {/* toogle button for status */}
                   <input
                     type="checkbox"
                     id="toggle"
@@ -379,9 +378,8 @@ export default function AddProduct() {
                   <label htmlFor="toggle" className="toggle-label" />
                 </div>
               </div>
-              {/* ========================================= */}
-
               <div className="row">
+                {/* select for variants  */}
                 {selectFields.map((fields, index) => (
                   <div key={index} className="col-md-12 mb-2">
                     <div className="row">
@@ -415,6 +413,7 @@ export default function AddProduct() {
                           className="mb-1 mr-sm-2 form-control"
                           id="category-form-input-field"
                         >
+                          {/* select for attributes  */}
                           <TreeSelect
                             treeData={attributes.map((item) => ({
                               title: item.attribute,
@@ -455,7 +454,6 @@ export default function AddProduct() {
                   </button>
                 </div>
               </div>
-              {/* ================================================= */}
               <div className="row mt-3">
                 <div className="col-md-4">
                   <label>Category*</label>
@@ -464,6 +462,7 @@ export default function AddProduct() {
                     className="mb-1 mr-sm-2 form-control"
                     id="category-form-input-field"
                   >
+                    {/* category select input  */}
                     <TreeSelect
                       treeData={treeData}
                       onChange={handleCat}
@@ -485,6 +484,7 @@ export default function AddProduct() {
 
                 <div className="col-md-4">
                   <label htmlFor="price">Price Per Unit*</label>
+                  {/* price input field  */}
                   <input
                     id="category-form-input-field"
                     type="text"
@@ -499,6 +499,7 @@ export default function AddProduct() {
                 </div>
                 <div className="col-md-4">
                   <label htmlFor="price">Discounted Price*</label>
+                  {/* discounted price input field  */}
                   <input
                     id="category-form-input-field"
                     type="text"
@@ -515,6 +516,7 @@ export default function AddProduct() {
               <div className="row mt-3">
                 <div className="col-md-4">
                   <label htmlFor="price">Quantity*</label>
+                  {/* quantity input field  */}
                   <input
                     id="category-form-input-field"
                     type="text"
@@ -529,6 +531,7 @@ export default function AddProduct() {
                 </div>
                 <div className="col-md-4">
                   <label htmlFor="sub-category">SKU*</label>
+                  {/* SKU input field  */}
                   <input
                     id="category-form-input-field"
                     type="text"
@@ -545,12 +548,13 @@ export default function AddProduct() {
                     id="category-form-input-field"
                     className="form-control mb-1 mr-sm-2"
                   >
+                    {/* date picker for selecting data  */}
                     <DatePicker
                       dateFormat="dd/MM/yyyy"
                       selected={launchDate}
                       onChange={handleDateChange}
                       className="date"
-                      minDate={new Date()}
+                      minDate={new Date()} // allow only present and future dates
                     />
                   </div>
                 </div>
@@ -558,6 +562,7 @@ export default function AddProduct() {
               <div className="row mt-3">
                 <div>
                   <label>Description:</label>
+                  {/* textarea for description   */}
                   <textarea
                     id="category-form-input-field-txtarea"
                     className="form-control mb-1 mr-sm-2"
@@ -570,6 +575,7 @@ export default function AddProduct() {
               <div className="row mt-3 mb-5">
                 <div className="col-md-3">
                   <label htmlFor="media">Upload Media</label>
+                  {/* media input field for images and videos  */}
                   <input
                     type="file"
                     name="media"
@@ -581,6 +587,7 @@ export default function AddProduct() {
                     <div className="error-message">{mediaError}</div>
                   )}
                 </div>
+                {/* preview of selected images  */}
                 <div className="col-md-9 media" style={{ display: "flex" }}>
                   {selectedImages &&
                     selectedImages.map((image, index) => (
@@ -614,6 +621,7 @@ export default function AddProduct() {
                         />
                       </div>
                     ))}
+                  {/* selected videos preview */}
                   {selectedVideos &&
                     selectedVideos.map((video, index) => (
                       <div
@@ -640,9 +648,9 @@ export default function AddProduct() {
                     ))}
                 </div>
               </div>
-
               <div className="row mt-3">
                 <div id="produc-submit-cancel-btn">
+                  {/* buttons for submit and cancel  */}
                   <button
                     type="submit"
                     className="button-add-cat"
@@ -663,5 +671,3 @@ export default function AddProduct() {
     </>
   );
 }
-
-

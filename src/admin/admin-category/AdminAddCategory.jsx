@@ -3,13 +3,12 @@ import "../../styles/Admin.css";
 import { useNavigate, Outlet } from "react-router-dom";
 import NavigationBar from "../components/AdminSideNavBar";
 import TopNavbar from "../components/AdminTopNavBar";
-import { API_URL } from "../../helpers/config";
 import {
   validateCategoryInput,
   validateDescriptiionInput,
 } from "../../helpers/validations";
 import ToastComponent from "../components/Toast";
-import { getData,postData } from "../../helpers/api/general.Api";
+import { getData, postData } from "../../helpers/api/general.Api";
 function AddCategory() {
   // State variables for form inputs
   const [category, setCategory] = useState("");
@@ -17,27 +16,28 @@ function AddCategory() {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
-  //=====================================================
+
   // State variables for form errors
   const [categoryError, setCategoryError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
   const [CategoryValidate, setCategoryValidate] = useState("");
   const [DescriptionValidate, setDescriptionValidate] = useState("");
+
   // State variables for success/error messages and navigation
   const [message, setMessage] = useState("");
+
   // State variables for dropdown selection and data fetching
   const [data, setData] = useState([]);
+  const [showToast, SetShowToast] = useState(false);
   const navigate = useNavigate();
   //===================================================
-  const [showToast, SetShowToast] = useState(false);
-  //====================================================
+  // Handle toast close and error message
   const handleToastClose = () => SetShowToast(false);
   const handleErrorToast = () => {
     setMessage("Category Already Exist..");
     SetShowToast(true);
   };
   // Function to handle image preview when a file is selected
-  //======================================================
   const handleImagePreview = (e) => {
     const selectedImage = e.target.files[0];
     if (selectedImage) {
@@ -63,12 +63,12 @@ function AddCategory() {
   const handleImage = (e) => {
     setImage(e.target.files[0]);
   };
-  // Function to handle form submission
+  // Function to handle form cancellation
   const handleCancel = () => {
     navigate("/admin/category");
   };
   //=========================================================
-  //Function to handle form submission 
+  //Function to handle form submission
   const onSubmit = async (e) => {
     e.preventDefault();
     validateCategoryInput(category, setCategoryError, setCategoryValidate);
@@ -85,7 +85,7 @@ function AddCategory() {
         formData.append("description", description);
         formData.append("status", 1);
         formData.append("image", image);
-        await postData(`/add-category`, formData);       
+        await postData(`/add-category`, formData);
         navigate(-1);
       } catch (error) {
         console.error(error);
@@ -93,18 +93,20 @@ function AddCategory() {
       }
     }
   };
-useEffect(() => {
-  getData(`/parent-category`)
-    .then((data) => {
-      setData(data); // setData is a state updater function
-    })
-    .catch((error) => {
-      console.error("API request error:", error);
-    });
-}, []);
+  // Fetch parent category data on component mount
+  useEffect(() => {
+    getData(`/parent-category`)
+      .then((data) => {
+        setData(data); // setData is a state updater function
+      })
+      .catch((error) => {
+        console.error("API request error:", error);
+      });
+  }, []);
   return (
     <>
       {showToast && (
+        // Toast component for displaying messages
         <div className="toast-css">
           <ToastComponent
             showToast={showToast}
@@ -116,19 +118,25 @@ useEffect(() => {
       )}
       <div className="container-fluid" style={{ textAlign: "left" }}>
         <div className="row">
+          {/* Sidebar */}
           <nav className="col-md-2 bg-light sidebar">
+            {/* Sidebar content */}
             <div className="position-fixed">
               <NavigationBar />
             </div>
           </nav>
+          {/* Main Content */}
           <main className="col-md-10">
+            {/* Top Navbar */}
             <TopNavbar showSearchBar={false} />
             <p className="page-heading">Add Category</p>
+            {/* Form section */}
             <div className="form-flex">
               <form method="post" encType="multipart/FormData">
                 <div className="row ">
                   <div className="col-md-5">
                     <label htmlFor="category_name">Category Name*</label>
+                    {/* Category Name input */}
                     <input
                       type="text"
                       name="category"
@@ -143,6 +151,7 @@ useEffect(() => {
                   </div>
                   <div className="col-md-5">
                     <label>Parent Category:</label>
+                    {/* Parent Category select */}
                     <select
                       id="category-form-input-field"
                       name="parent"
@@ -163,6 +172,7 @@ useEffect(() => {
                 <div className="row">
                   <div className="col-md-10">
                     <label>Description*</label>
+                    {/* Description textarea */}
                     <textarea
                       className="form-control mb-1 mr-sm-2"
                       id="category-form-input-field-txtarea"
@@ -178,6 +188,7 @@ useEffect(() => {
                 <div className="row">
                   <div className=" col-md-3">
                     <label for="image">Image Upload</label>
+                    {/* Image upload input */}
                     <input
                       type="file"
                       className="form-control-file"
@@ -189,6 +200,7 @@ useEffect(() => {
                       }}
                     />
                     <div className="col-md-5 images">
+                      {/* Image preview */}
                       {imagePreview && (
                         <div className="image-preview">
                           <img
@@ -202,6 +214,7 @@ useEffect(() => {
                   </div>
                 </div>
                 <div className="category-button-div">
+                  {/* Form buttons */}
                   <button
                     type="submit"
                     className="button-add-cat"

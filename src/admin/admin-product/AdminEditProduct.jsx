@@ -18,14 +18,14 @@ import {
 import { getData, updateData } from "../../helpers/api/general.Api";
 
 export default function EditProduct({ record, onCancel, onSave }) {
-  const [editedData, setEditedData] = useState({ ...record });
-  const [dbDate, setDbdate] = useState();
+  // State declarations
+  const [editedData, setEditedData] = useState({ ...record }); //hook for holding edited data
+  const [dbDate, setDbdate] = useState(); //date
   const [launchDate, setLaunchDate] = useState(dbDate);
   const [selectedImages, setSelectedImages] = useState([]); // set selected images in array
   const [selectFields, setSelectFields] = useState([]);
-  const [attributes, setAttributes] = useState([]);
-  const [variants, setVariants] = useState([]);
-
+  const [attributes, setAttributes] = useState([]); //hook to hold attributes
+  const [variants, setVariants] = useState([]); //hook to hold variants
   //==============================================
   //validation states
   const [productError, setProductError] = useState("");
@@ -44,13 +44,10 @@ export default function EditProduct({ record, onCancel, onSave }) {
   const [validateCategory, setValidateCategory] = useState(false);
   const [validateMedia, setValidateMedia] = useState(false);
   //==============================================
-  if(editedData.image){
-   var uniqueImages = Array.from(new Set(editedData.images.split(',')));}
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedData({ ...editedData, [name]: value });
-  };
-  
+  // Logic to extract unique images
+   if(editedData.images){
+   var uniqueImages = Array.from(new Set(editedData.images.split(",")));};
+  // Function to convert date format
   const convertToDate = () => {
     const dateParts = record.lauch_date.split("/");
     const validDate = new Date(
@@ -59,13 +56,18 @@ export default function EditProduct({ record, onCancel, onSave }) {
     setDbdate(validDate);
   };
   //====================================
+  // Event handler for input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedData({ ...editedData, [name]: value });
+  };
+  // Functions to handle variant and attribute changes
   const handleAddSelectFields = () => {
     setSelectFields([
       ...selectFields,
       { variant: "", attributes: [] }, // Initialize with empty values
     ]);
   };
-
   // Function to remove select fields
   const handleRemoveSelectFields = (indexToRemove) => {
     const updatedFields = selectFields.filter(
@@ -73,36 +75,37 @@ export default function EditProduct({ record, onCancel, onSave }) {
     );
     setSelectFields(updatedFields);
   };
-
+  //function to handle  variant change
   const handleVariantChange = (value, index) => {
     const updatedFields = [...selectFields];
     updatedFields[index].variant = value;
     setSelectFields(updatedFields);
   };
-
+  //function to handle attribute change
   const handleAttributeChange = (value, index) => {
     const updatedFields = [...selectFields];
     updatedFields[index].attributes = value;
     setSelectFields(updatedFields);
   };
-  //======================
+  // Event handler for category change
   const handleCategoryChange = (selectedNodes) => {
     setEditedData({
       ...editedData,
       category_id: selectedNodes,
     });
   };
-  //==========================
+  // Function to handle file selection
   const onSelectFile = (e) => {
     const files = e.target.files;
     const selectedImages = Array.from(files);
     setSelectedImages(selectedImages);
   };
+  // Event handler for date change
   const handleDateChange = (selectedDate) => {
     setLaunchDate(selectedDate);
     setDbdate(selectedDate); // Update the dbDate with the selected date
   };
-  //function to handle image preview
+  // Function to preview image
   const previewImage = (image) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -114,6 +117,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
   };
   const onSubmit = async (e) => {
     e.preventDefault();
+    // Validation logic and form submission
     validateText(editedData.product_name, setProductError, setValidateProduct);
     validateText(editedData.category_id, setCategoryError, setValidateCategory);
     validateAlphaNumeric(editedData.sku, setSKUError, setValidateSku);
@@ -167,6 +171,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
       for (let i = 0; i < selectedImages.length; i++) {
         formData.append("media", selectedImages[i]); // Append each image individually
       }
+      // Formatting data for variants and attributes
       for (let i = 0; i < selectFields.length; i++) {
         formData.append(`variants[${i}][variant]`, selectFields[i].variant);
         // Assuming 'attributes' in each object is an array
@@ -178,7 +183,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
         }
       }
       try {
-        await updateData(`/edit-product`,formData);
+        await updateData(`/edit-product`, formData);
         onSave();
       } catch (error) {
         console.error("Error:", error);
@@ -197,15 +202,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
       formatedData.push(dataObject);
     });
   }
-  //====================================================
-  useEffect(() => {
-    const formattedSelectFields = formatedData.map((data) => ({
-      variant: data.variant,
-      attributes: data.attributes,
-    }));
-    setSelectFields(formattedSelectFields);
-  }, []);
-  //==============================================
   //function to tree structure of category and sub category
   const buildTree = (categories, parent_id = null) => {
     let tree = [];
@@ -233,19 +229,19 @@ export default function EditProduct({ record, onCancel, onSave }) {
       return subTree; // Return the subcategory tree
     }
   };
- 
   //==============================================
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetching categories data
         const data = await getData(`/categories`);
         const formattedData = buildTree(data);
         setTreeData(formattedData);
         convertToDate();
-
-        const variantData = await  getData(`/variants`);
+        // Fetching variants data
+        const variantData = await getData(`/variants`);
         setVariants(variantData);
-
+        // Fetching attributes data
         const attributeData = await getData(`/attributes`);
         setAttributes(attributeData);
       } catch (error) {
@@ -253,6 +249,14 @@ export default function EditProduct({ record, onCancel, onSave }) {
       }
     };
     fetchData();
+  }, []);
+  useEffect(() => {
+    // Updating selectFields based on formatedData
+    const formattedSelectFields = formatedData.map((data) => ({
+      variant: data.variant,
+      attributes: data.attributes,
+    }));
+    setSelectFields(formattedSelectFields);
   }, []);
   //=============================================
   return (
@@ -268,10 +272,13 @@ export default function EditProduct({ record, onCancel, onSave }) {
         <main className="col-md-10 ">
           <TopNavbar showSearchBar={false} />
           <p className="page-heading">Edit Product</p>
+          {/* Form for editing product */}
           <form encType="multipart/FormData" className="col-md-11">
+            {/* Form fields */}
             <div className="row">
               <div className="col-md-4">
                 <label htmlFor="product_name">Product Name</label>
+                {/* input for product name  */}
                 <input
                   id="category-form-input-field"
                   type="text"
@@ -281,16 +288,17 @@ export default function EditProduct({ record, onCancel, onSave }) {
                   onChange={handleInputChange}
                   placeholder="Product Name"
                 />
+                {/* product error messages  */}
                 {productError && (
                   <div className="error-message">{productError}</div>
                 )}
               </div>
             </div>
-            {/* ================================ */}
             <div className="row">
               {selectFields.map((fields, index) => (
                 <div key={index} className="col-md-12 mb-2">
                   <div className="row">
+                    {/* Variants and attributes */}
                     <div className="col-md-4">
                       <label htmlFor={`variant-${index}`}>
                         Select Variant*
@@ -300,6 +308,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                         id="category-form-input-field"
                         style={{ height: "40px" }}
                       >
+                        {/* select for variants  */}
                         <TreeSelect
                           treeData={variants.map((item) => ({
                             title: item.name,
@@ -321,6 +330,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                         className="mb-1 mr-sm-2 form-control"
                         id="category-form-input-field"
                       >
+                        {/* select for  attributes  */}
                         <TreeSelect
                           treeData={attributes.map((item) => ({
                             title: item.attribute,
@@ -361,7 +371,6 @@ export default function EditProduct({ record, onCancel, onSave }) {
                 </button>
               </div>
             </div>
-            {/* ====================================== */}
             <div className="row mt-3">
               <div className="col-md-4">
                 <label>Category</label>
@@ -370,6 +379,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                   className=" form-control mb-1 mr-sm-2 "
                   id="category-form-input-field"
                 >
+                  {/* select for category  */}
                   <TreeSelect
                     treeData={treeData}
                     value={editedData.category_id}
@@ -392,6 +402,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
               </div>
               <div className="col-md-4">
                 <label htmlFor="price">Price Per Unit</label>
+                {/* input for price per unit  */}
                 <input
                   id="category-form-input-field"
                   type="text"
@@ -406,6 +417,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                 )}
               </div>
               <div className="col-md-4">
+                {/* input for discounted price  */}
                 <label htmlFor="price">Discounted Price</label>
                 <input
                   id="category-form-input-field"
@@ -423,6 +435,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
             </div>
             <div className="row mt-3">
               <div className="col-md-4">
+                {/* input field for quantity  */}
                 <label htmlFor="price">Quantity</label>
                 <input
                   id="category-form-input-field"
@@ -438,6 +451,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                 )}
               </div>
               <div className="col-md-4">
+                {/* input for SKU  */}
                 <label htmlFor="sub-category">SKU</label>
                 <input
                   id="category-form-input-field"
@@ -456,6 +470,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                   id="category-form-input-field"
                   className="form-control mb-1 mr-sm-2"
                 >
+                  {/* launch date input field  */}
                   <DatePicker
                     dateFormat="dd/MM/yyyy"
                     placeholder={editedData.launch_date}
@@ -470,6 +485,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
             <div className="row mt-3">
               <div>
                 <label>Description:</label>
+                {/* text area for description  */}
                 <textarea
                   id="category-form-input-field-txtarea"
                   className="form-control mb-1 mr-sm-2"
@@ -482,6 +498,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
             </div>
             <div className="row mt-3 mb-5">
               <div className="col-md-3">
+                {/* input field for media  */}
                 <label for="image">Upload Media</label>
                 <input
                   type="file"
@@ -491,6 +508,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                 />
               </div>
               <div className="col-md-4 images" style={{ display: "flex" }}>
+                {/* image preview  */}
                 {selectedImages && selectedImages.length > 0 ? (
                   selectedImages.map((image, index) => (
                     <div
@@ -513,7 +531,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                     </div>
                   ))
                 ) : editedData && editedData.images ? (
-                   uniqueImages.map((imageName, index) => (
+                  uniqueImages.map((imageName, index) => (
                     <img
                       key={index}
                       src={`${API_URL}/product-image-uploads/${imageName.trim()}`}
@@ -526,6 +544,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
                     />
                   ))
                 ) : (
+                  // if no image for product then default image
                   <img
                     src={
                       "https://images.unsplash.com/photo-1575936123452-b67c3203c357?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
@@ -542,6 +561,7 @@ export default function EditProduct({ record, onCancel, onSave }) {
               {mediaError && <div className="error-message">{mediaError}</div>}
             </div>
             <div className="row mt-3">
+              {/* cancel and save buttons  */}
               <div id="produc-submit-cancel-btn">
                 <button
                   type="submit"

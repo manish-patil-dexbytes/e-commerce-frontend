@@ -1,4 +1,4 @@
-
+// export default ProductPreview;
 import React from "react";
 import { Modal, Row, Col } from "react-bootstrap";
 import { Carousel as ImageCarousel } from "react-responsive-carousel";
@@ -7,12 +7,15 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 const ProductPreview = (props) => {
   return (
     <>
+      {/* Modal for displaying product details */}
       <Modal show={props.show} onHide={props.handleClose} size="lg">
         <Modal.Header style={{ backgroundColor: "#e3974b" }} closeButton>
           <Modal.Title>Product Details</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ background: "transparent" }}>
+          {/* Row for product details */}
           <Row>
+            {/* Column for images and videos */}
             <Col
               sm={8}
               style={{
@@ -23,7 +26,9 @@ const ProductPreview = (props) => {
                 justifyContent: "center",
               }}
             >
+              {/* Carousel for images and videos */}
               <ImageCarousel showArrows={true} showThumbs={true}>
+                {/* Mapping through images */}
                 {props.images.map((image, index) => (
                   <img
                     key={index}
@@ -32,6 +37,7 @@ const ProductPreview = (props) => {
                     style={{ maxHeight: 280, maxWidth: 450 }}
                   />
                 ))}
+                {/* Mapping through videos */}
                 {props.videos.map((video, index) => (
                   <div
                     key={index}
@@ -56,6 +62,7 @@ const ProductPreview = (props) => {
                 ))}
               </ImageCarousel>
             </Col>
+            {/* Column for product details */}
             <Col sm={12}>
               <p>
                 <strong>{`${props.product} (${props.sku})`}</strong>
@@ -64,7 +71,6 @@ const ProductPreview = (props) => {
                 <strong>Category:</strong>
                 {props.category}
               </p>
-
               <p>
                 <strong>Price:</strong>
                 {props.price}
@@ -83,3 +89,4 @@ const ProductPreview = (props) => {
 };
 
 export default ProductPreview;
+

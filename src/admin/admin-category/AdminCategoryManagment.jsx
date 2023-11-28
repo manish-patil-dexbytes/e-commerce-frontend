@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import axios from "axios";
 import { Button, Modal, Row, Col } from "react-bootstrap";
 import { Link, Outlet } from "react-router-dom";
 import EditRecord from "./AdminEditCategory";
@@ -11,8 +10,7 @@ import { API_URL } from "../../helpers/config";
 import ToastComponent from "../components/Toast";
 import { EditSvg, ViewSvg } from "../components/SVG";
 import { updateCategoryStatus } from "../../helpers/api/category.Api";
-import { getData, getDataForFilter, updateData } from "../../helpers/api/general.Api";
-
+import { getData } from "../../helpers/api/general.Api";
 
 export default function AdminCatMangment() {
   const [category, setCategory] = useState([]); // State for  category name
@@ -23,17 +21,9 @@ export default function AdminCatMangment() {
   const [selectedId, setSelectedId] = useState(null);
   const [showToast, setShowToast] = useState(false); // State for showing the toast
   const [toastMessage, setToastMessage] = useState("");
-   let setCategoryResponse
   //====================================================
-  //Toast for showing the messages
-  const showToastMessage = (message) => {
-    setToastMessage(message);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000); // Close the toast after 3 seconds
-  };
- 
-  //========================================================
-  const getCategory = async (filter = '') => {
+  //function to get category data
+  const getCategory = async (filter = "") => {
     try {
       const response = await getData(`/get-categories`);
       const filteredData = response.filter((item) =>
@@ -44,11 +34,10 @@ export default function AdminCatMangment() {
       console.error(error);
     }
   };
-  
   useEffect(() => {
     getCategory(); // Fetch all categories initially
   }, []);
-
+  // function to view data for specific id
   const viewCategoryData = async (id) => {
     try {
       const data = await getData(`/view-categories/${id}`);
@@ -57,7 +46,7 @@ export default function AdminCatMangment() {
       console.error("API request error:", error);
     }
   };
-  
+  //function to  handle status change
   const handleStatusChange = async (row) => {
     const updatedStatus = row.status === 1 ? 0 : 1;
     try {
@@ -72,6 +61,11 @@ export default function AdminCatMangment() {
       console.error("Error saving record:", error);
     }
   };
+  useEffect(() => {
+    if (showViewModal && selectedId) {
+      viewCategoryData(selectedId);
+    }
+  }, [showViewModal]);
   //parsing data to data table
   const columns = [
     {
@@ -105,7 +99,6 @@ export default function AdminCatMangment() {
         </button>
       ),
     },
-
     {
       name: "Actions",
       cell: (row) => (
@@ -125,7 +118,14 @@ export default function AdminCatMangment() {
       ),
     },
   ];
-
+  //functiong for  showing and hiding the toast messages
+  const showToastMessage = (message) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000); // Close the toast after 3 seconds
+  };
+  const handleToastClose = () => setShowToast(false);
+  //function to handle edit data of category
   const handleEdit = (row) => {
     setSelectedRecord(row);
     setIsEditing(true);
@@ -140,27 +140,19 @@ export default function AdminCatMangment() {
     }
     setIsEditing(false);
   };
-
+  //function to handle view data of specific category
   const handleView = (row) => {
     setSelectedId(row.id);
     setShowViewModal(true);
   };
-
   const handleCloseViewModal = () => {
     setShowViewModal(false);
   };
-  useEffect(() => {
-    if (showViewModal && selectedId) {
-      viewCategoryData(selectedId);
-    }
-  }, [showViewModal]);
-
   //======================================================
- 
-  const handleToastClose = () => setShowToast(false);
   return (
     <>
       {showToast && (
+        // Toast component to display a success message
         <div className="toast-css">
           <ToastComponent
             showToast={showToast}
@@ -172,13 +164,16 @@ export default function AdminCatMangment() {
         </div>
       )}
       {showViewModal && selectedId && (
+        // Modal to display category details
         <Modal show={showViewModal} onHide={handleCloseViewModal}>
           <Modal.Header closeButton>
             <Modal.Title>Category Details</Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            {/* Displaying category details */}
             <Row>
               <Col sm={6}>
+                {/* Display category image */}
                 <img
                   src={
                     viewCategory && viewCategory.image
@@ -190,6 +185,7 @@ export default function AdminCatMangment() {
                 />
               </Col>
               <Col sm={6}>
+                {/* Display category information */}
                 <p>
                   Category Name:{" "}
                   {viewCategory
@@ -234,6 +230,7 @@ export default function AdminCatMangment() {
               </Col>
             </Row>
           </Modal.Body>
+          {/* Modal Footer */}
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseViewModal}>
               Close
@@ -242,7 +239,9 @@ export default function AdminCatMangment() {
         </Modal>
       )}
       {isEditing && selectedRecord && (
+        // Editing a record
         <div className="edit-record-container">
+          {/* EditRecord component */}
           <EditRecord
             record={selectedRecord}
             onSave={() => {
@@ -257,6 +256,7 @@ export default function AdminCatMangment() {
         </div>
       )}
       {isEditing || (
+        // Displaying content if not editing
         <div className="container-fluid" style={{ textAlign: "left" }}>
           <div className="row">
             {/* Sidebar */}
@@ -268,8 +268,11 @@ export default function AdminCatMangment() {
             {/* Main Content */}
             <main className="col-md-10 ">
               <TopNavbar handleFilter={getCategory} />
+              {/* Top navigation bar */}
               <p className="page-heading">Category</p>
+              {/* Displaying category table */}
               <div className="col-md-11 table-css">
+                {/* Link to add category */}
                 <Link to="/admin/category/add-category">
                   <Button
                     style={{
@@ -283,13 +286,15 @@ export default function AdminCatMangment() {
                     Add
                   </Button>
                 </Link>
+                {/* Displaying table data */}
                 <div className="custom-table">
-                  <DataTable
-                    columns={columns}
-                    data={category}
-                    pagination
-                    paginationPerPage={9}
-                  />
+                   {category.length > 0 ? (
+                  <div>
+                    <DataTable columns={columns} data={category} />
+                  </div>
+                ) : (
+                  <div>No category Found</div>
+                )}
                 </div>
               </div>
             </main>

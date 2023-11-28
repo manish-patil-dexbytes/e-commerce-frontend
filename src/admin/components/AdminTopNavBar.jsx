@@ -1,26 +1,31 @@
-// import "../App.css";
+// import React and necessary hooks
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
-import { BiBell } from "react-icons/bi";
-import "../../styles/Admin.css";
-import { Link, useNavigate } from "react-router-dom";
-import { UserIconSvg } from "./SVG";
+import { BiBell } from "react-icons/bi"; // Bell Icon
+import "../../styles/Admin.css"; // Custom CSS
+import { Link, useNavigate } from "react-router-dom"; // Router functionalities
+import { UserIconSvg } from "./SVG"; // Custom User Icon SVG
 
-function TopNavbar({ handleFilter,showSearchBar = true }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const navigate = useNavigate();
+// Functional component for the top navigation bar
+function TopNavbar({ handleFilter, showSearchBar = true }) {
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for user dropdown visibility
+  const navigate = useNavigate(); // Router navigation functionality
+
+  // Function to toggle the visibility of the user dropdown
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
+  // Function to handle changes in the search bar
   const handleSearchChange = (e) => {
     e.preventDefault();
     const query = e.target.value;
     setSearchQuery(query);
     handleFilter(query);
   };
- 
+
+  // Function to handle user logout
   const logout = () => {
     localStorage.clear();
     navigate("/");
@@ -28,36 +33,33 @@ function TopNavbar({ handleFilter,showSearchBar = true }) {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light  col-md-10 margin-top">
+    // Top navigation bar structure
+    <nav className="navbar navbar-expand-lg navbar-light col-md-10 margin-top">
       <div className="container-md">
         {/* Search Bar */}
-        {showSearchBar &&(
-        <form className="d-flex mx-auto col-md-6 ">
-          <input
-            className="form-control me-2 "
-            id="responsive-search"
-            type="search"
-            placeholder="Search"
-            aria-label="Search"
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
-
-          <button
-            disabled
-            className="btn "
-            id="responsive-button"
-            type="submit"
-          >
-            Search
-          </button>
-        </form>
+        {showSearchBar && (
+          <form className="d-flex mx-auto col-md-6 ">
+            <input
+              className="form-control me-2 "
+              id="responsive-search"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+              value={searchQuery}
+              onChange={handleSearchChange}
+            />
+            <button
+              disabled
+              className="btn "
+              id="responsive-button"
+              type="submit"
+            >
+              Search
+            </button>
+          </form>
         )}
-        {!showSearchBar &&(
-          <div className="col-md-10">
+        {!showSearchBar && <div className="col-md-10"></div>}
 
-          </div>
-        )}
         {/* User Dropdown and Bell Icon */}
         <Link className="nav-link " id="bell" to="#">
           <BiBell style={{ fontSize: "20px" }} />
@@ -74,6 +76,7 @@ function TopNavbar({ handleFilter,showSearchBar = true }) {
               <UserIconSvg />
             </Link>
 
+            {/* Dropdown menu for user options */}
             <ul
               className={`dropdown-menu dropdown-menu-end ${
                 isDropdownOpen ? "show" : ""
@@ -102,6 +105,7 @@ function TopNavbar({ handleFilter,showSearchBar = true }) {
                 <hr className="dropdown-divider" />
               </li>
               <li>
+                {/* Logout option */}
                 <Link
                   className="dropdown-item"
                   to="#"
@@ -118,5 +122,4 @@ function TopNavbar({ handleFilter,showSearchBar = true }) {
     </nav>
   );
 }
-
 export default TopNavbar;

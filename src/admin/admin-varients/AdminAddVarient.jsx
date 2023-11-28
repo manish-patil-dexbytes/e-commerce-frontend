@@ -9,6 +9,7 @@ import {
 import ToastComponent from "../components/Toast";
 import { postData } from "../../helpers/api/general.Api";
 export default function AddProductVariant() {
+  // State declarations
   const [variantName, setVariantName] = useState("");
   const [inputFields, setInputFields] = useState([]);
   const [variantNameError, setVariantNameError] = useState("");
@@ -18,9 +19,12 @@ export default function AddProductVariant() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const navigate = useNavigate();
+
+  // Function to handle variant name change
   const handleVariant = (e) => {
     setVariantName(e.target.value);
   };
+  // Function to handle attribute input change
   const handleInputChange = (id, value) => {
     const updatedFields = inputFields.map((field) => {
       if (field.id === id) {
@@ -30,21 +34,27 @@ export default function AddProductVariant() {
     });
     setInputFields(updatedFields);
   };
+    // Function to show toast message
   const showToastMessage = (message) => {
     setToastMessage(message);
     setShowToast(true);
     setTimeout(() => setShowToast(false), 3000); // Close the toast after 3 seconds
   };
+   // Function to add a new input field for attributes
   const addInputField = () => {
     setInputFields([...inputFields, { id: inputFields.length, value: "" }]);
   };
+   // Function to remove an input field for attributes
   const removeInputField = (id) => {
     const updatedFields = inputFields.filter((field) => field.id !== id);
     setInputFields(updatedFields);
   };
+  // Function to handle closing toast
   const handleToastClose = () => setShowToast(false);
+  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+     // Validation checks for variant name and attributes
     if (inputFields.some((field) => !field.value.trim())) {
       showToastMessage("Enter attribute name");
     }
@@ -55,6 +65,7 @@ export default function AddProductVariant() {
       setValidateAttribute
     );
     if (validateVariant === true && validateAttribute === true) {
+      // Creating unique attribute list
       const uniqueAttributes = Array.from(
         new Set(inputFields.map((field) => field.value.trim().toLowerCase()))
       ).filter((value) => value.trim() !== "");
@@ -62,6 +73,7 @@ export default function AddProductVariant() {
       setInputFields(
         uniqueAttributes.map((attr, index) => ({ id: index, value: attr }))
       );
+      // Posting data for new variant
       if (
         variantName &&
         variantName.trim() !== "" &&
@@ -72,7 +84,7 @@ export default function AddProductVariant() {
             variant: variantName,
             attributes: uniqueAttributes,
           });
-          navigate(-1);
+          navigate(-1);// Go back to the previous page after successful addition
         } catch (error) {
           console.error("Error in adding Variant", error);
           showToastMessage("Variant already exists");
@@ -80,11 +92,14 @@ export default function AddProductVariant() {
       }
     }
   };
+  // Function to handle cancel button click
   const onCancel = () => {
-    navigate(-1);
+    navigate(-1);// Go back to the previous page
   };
+  // Return statement for AddProductVariant component
   return (
     <>
+     {/* Toast component to display messages */}
       {showToast && (
         <div className="toast-css">
           <ToastComponent
@@ -99,12 +114,15 @@ export default function AddProductVariant() {
         <div className="row">
           <nav className="col-md-2 bg-light sidebar">
             <div className="position-fixed">
-              <NavigationBar />
+              {/* side navigation bar  */}
+              <NavigationBar /> 
             </div>
           </nav>
           <main className="col-md-10 " style={{ textAlign: "left" }}>
+            {/* top navigation bar  */}
             <TopNavbar showSearchBar={false} />
             <p className="page-heading ">Variants</p>
+            {/* Form for adding product variants */}
             <form
               onSubmit={(e) => e.preventDefault()}
               className="col-md-12  row"
@@ -120,6 +138,7 @@ export default function AddProductVariant() {
                     onChange={handleVariant}
                     placeholder="Variant Name"
                   />
+                  {/* error messages  */}
                   {variantNameError && (
                     <div className="error-message">{variantNameError}</div>
                   )}
@@ -153,6 +172,7 @@ export default function AddProductVariant() {
                 ))}
               </div>
               <div style={{ marginLeft: "-30px" }}>
+                 {/* buttons for cancel and add  */}
                 <button
                   type="button"
                   onClick={addInputField}
