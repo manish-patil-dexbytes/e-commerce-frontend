@@ -44,7 +44,8 @@ export default function EditProduct({ record, onCancel, onSave }) {
   const [validateCategory, setValidateCategory] = useState(false);
   const [validateMedia, setValidateMedia] = useState(false);
   //==============================================
-  const uniqueImages = Array.from(new Set(editedData.images.split(',')));
+  if(editedData.image){
+   var uniqueImages = Array.from(new Set(editedData.images.split(',')));}
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setEditedData({ ...editedData, [name]: value });

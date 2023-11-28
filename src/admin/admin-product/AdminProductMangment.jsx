@@ -9,8 +9,7 @@ import EditProduct from "./AdminEditProduct";
 import "../../styles/Admin.css";
 import { DeleteSvg, EditSvg } from "../components/SVG";
 import ToastComponent from "../components/Toast";
-import axios from "axios";
-import { deleteProduct,  updateProductStatus } from "../../helpers/api/product.Api";
+import {  updateProductStatus } from "../../helpers/api/product.Api";
 import { deleteData, getData } from "../../helpers/api/general.Api";
 
 export default function ProductManagment() {
@@ -39,7 +38,6 @@ export default function ProductManagment() {
     getProduct();
   }, []);
   
- console.log(product)
 const handleDeleteProduct = async (id) => {
   try {
     const success = await deleteData(`/deleteProduct/${id}`);
@@ -51,7 +49,6 @@ const handleDeleteProduct = async (id) => {
     console.error("Error deleting product:", error);
   }
 };
-
   const handleStatusChange = async (row) => {
     const updatedStatus = row.status === 1 ? 0 : 1; // Toggle status between 0 and 1
     try {
@@ -69,7 +66,6 @@ const handleDeleteProduct = async (id) => {
     }
   };
   //==================================================
-
   const handleToastClose = () => SetShowToast(false);
   const handleErrorToast = () => {
     setMessage("Product Edited Successfully");
@@ -135,7 +131,6 @@ const handleDeleteProduct = async (id) => {
       ),
     },
   ];
-
   const handleEdit = (record) => {
     setSelectedRecord(record);
     setIsEditing(true);
@@ -185,7 +180,6 @@ const handleDeleteProduct = async (id) => {
                 <NavigationBar />
               </div>
             </nav>
-
             <main className="col-md-10 " style={{ textAlign: "left" }}>
               <TopNavbar handleFilter={getProduct} />
 

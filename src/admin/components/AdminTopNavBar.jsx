@@ -9,7 +9,7 @@ import { UserIconSvg } from "./SVG";
 function TopNavbar({ handleFilter,showSearchBar = true }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const navigate = useNavigate();
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
@@ -20,10 +20,11 @@ function TopNavbar({ handleFilter,showSearchBar = true }) {
     setSearchQuery(query);
     handleFilter(query);
   };
-  const navigate = useNavigate();
+ 
   const logout = () => {
     localStorage.clear();
     navigate("/");
+    window.location.reload();
   };
 
   return (

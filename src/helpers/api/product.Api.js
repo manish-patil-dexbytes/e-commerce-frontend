@@ -6,7 +6,7 @@ const api = axios.create({
 });
 const updateProductStatus = async (id, updatedStatus) => {
   try {
-    const response = await axios.put(`${API_URL}/product-status/status/${id}`, {
+    const response = await api.put(`/product-status/status/${id}`, {
       status: updatedStatus,
     });
     return (
@@ -19,7 +19,6 @@ const updateProductStatus = async (id, updatedStatus) => {
 };
 
 export {
-
   updateProductStatus,
 };
 

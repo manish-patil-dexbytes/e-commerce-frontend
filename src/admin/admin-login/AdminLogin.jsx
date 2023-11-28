@@ -1,3 +1,4 @@
+
 import "../../styles/Admin.css";
 import React, { useState } from "react";
 import AdminDashBoard from "../admin-dashboard/AdminDashboard";
@@ -16,7 +17,12 @@ export default function AdminLogin() {
   const [passwordError, setPasswordError] = useState(""); //state for password error
   const [validate, setValidate] = useState();
   const navigate = useNavigate();
-
+  
+  const handleSuccessfulLogin = (token) => {
+    localStorage.setItem("token", token);
+    navigate("/admin/dashboard")
+    window.location.reload();
+  };
   // function to  handle submit email and password
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,9 +52,7 @@ export default function AdminLogin() {
         if (response.ok) {
           // Authentication successful
           const data = await response.json();
-          console.log(data);
-          localStorage.setItem("authenticated", true);
-          navigate("/admin/dashboard");
+          handleSuccessfulLogin(data.token); 
           // Redirect to the dashboard or perform other actions as needed
         } else {
           // Authentication failed
@@ -62,13 +66,8 @@ export default function AdminLogin() {
         console.error("Error:", error);
       }
     }  
-    //=================================================================
   };
-  // if login is success then we will redirected to admin dashboard
-  if (localStorage.getItem("authenticated") === "true") {
-    return <AdminDashBoard />;
-  }
-  //==================================================================
+  //===============================================================
   return (
     <div>
       <div className="container">
@@ -115,7 +114,7 @@ export default function AdminLogin() {
           </form>  
         </div>
       </div>
-      <Outlet />
+      <Outlet/>
     </div>
   );
 }
